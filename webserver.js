@@ -70,8 +70,7 @@ io.on('connection', function( socket ) {
   });
 
    socket.on('groupOne', function( msg ) {
-
-      msg.user_name = 'server';
+     
       io.emit('groupOne', msg);
    });
 

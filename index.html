@@ -31,48 +31,54 @@
                               <span v-for='msg in user.groups[user.session].msgs'>
 
                                     <!-- client sending message -->
-                                    <div v-if="msg.user_name === user.user_name" class="col-md-12 col-xs-12 pull-right">
+                                    <div v-if="msg.user_name === user.user_name" class="col-md-12 col-xs-12">
 
-                                            <ul class='col-xs-6 col-md-6'>
-                                              <li v-if="msg.type === 'text' " class='msg lead' id='me'> {{ msg.msg }} #{{ msg.user_name }} </li>
+                                            <ul class='pull-right'>
+                                              <li v-if="msg.type === 'text' " class='msg lead' id='me'> {{ msg.msg }} </li>
                                               <li v-else="msg.type === 'gif' ">
-                                                  <img :src="msg.src" class='gif img-responsive col-xs-6 col-md-8 img-rounded' />
+                                                  <img :src="msg.src" class='gif img-responsive img-rounded' />
                                               </li>
                                             </ul>
+                                            <div style='color: #999' class='col-md-12 col-xs-12'>
+                                              <p class='pull-right'>{{ msg.time  }}; {{ msg.user_name }} </p>
+                                            </div>
 
                                     </div>
 
 
                                     <!-- if the user is recving the message -->
-                                    <div v-else="msg.user_name !== user.user_name" class="col-md-12 col-xs-12 pull-left">
+                                    <div v-else="msg.user_name !== user.user_name" class="col-md-12 col-xs-12">
 
-                                          <ul class='col-xs-6 col-md-6'>
-                                            <li v-if=" msg.type === 'text' " class='msg lead' id='other'> {{ msg.msg }} #{{ msg.user_name }}</li>
-                                            <li v-else=" msg.type === 'gif' ">
-                                                  <img :src="msg.src" class='gif img-responsive col-xs-6 col-md-8 img-rounded' />
-                                            </li>
+                                          <ul class='pull-left'>
+                                             <li v-if=" msg.type === 'text' " class='msg lead' id='other'> {{ msg.msg }} </li>
+
+                                             <li v-else=" msg.type === 'gif' ">
+                                                  <img :src="msg.src" class='gif img-responsive img-rounded' />
+                                             </li>
                                           </ul>
+                                          <div style='color: #999' class='col-md-12 col-xs-12'>
+                                            <p class='pull-left'>{{ msg.time  }}; {{ msg.user_name }} </p>
+                                          </div>
 
                                     </div>
 
                               </span>
+                      </div>
 
-                              <!-- the gif container -->
-                              <div v-if='gihpy.gifs.length !== 0' class="gif-bin col-xs-6 col-md-7 col-xs-offset-5 col-md-offset-4">
+                      <!-- the gif container -->
+                      <div v-if='gihpy.gifs.length !== 0' class="gif-bin col-xs-6 col-md-7 col-xs-offset-5 col-md-offset-4">
 
-                                  <button @click='gihpy.gifs = []' type="button" class="close" aria-label="Close">
-                                      <span aria-hidden="true">&times;</span>
-                                  </button>
+                          <button @click='gihpy.gifs = []' type="button" class="close" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                          </button>
 
-                                  <!-- the input box -->
-                                  <input style='margin-bottom: 20px' type="text" class="form-control" v-model='gif_query' placeholder='search' />
+                          <!-- the input box -->
+                          <input style='margin-bottom: 20px' type="text" class="form-control" v-model='gif_query' placeholder='search' />
 
-                                  <!-- the gif display -->
-                                  <div class="gif-container">
-                                      <img @click='send_gif( gif )' v-for='gif in gihpy.gifs' :src="gif" class='img-responsive img-rounded'/>
-                                  </div>
-
-                              </div>
+                          <!-- the gif display -->
+                          <div class="gif-container">
+                              <img @click='send_gif( gif )' v-for='gif in gihpy.gifs' :src="gif" class='img-responsive img-rounded'/>
+                          </div>
 
                       </div>
 

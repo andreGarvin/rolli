@@ -217,8 +217,10 @@ var app = new Vue({
                 this.load_gifs();
             }
         }
+    },
+    url: function() {
+      this.gihpy.gifs = [];
     }
-
 });
 
 // init the connection
