@@ -12,7 +12,7 @@ var app = new Vue({
             gifs: [],
         },
         user: {
-            listedgroups: ['groupOne'],
+            listedgroups: ['global'],
             user_name: 'andreGarvin',
             session: {
               group: 'global',
@@ -31,15 +31,15 @@ var app = new Vue({
         }
     },
     methods: {
-        
+
         getuser_name: function() {
-            
+
             var user_name = '';
-            
+
             while ( user_name.length === 0 ) {
                 var user_name = prompt('eneter user name');
             }
-            
+
             this.user.user_name = user_name;
         },
 
