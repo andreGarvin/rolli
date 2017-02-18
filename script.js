@@ -6,6 +6,7 @@ var app = new Vue({
         query: '',
         gif_query: '',
         seen: true,
+        groupbin: false,
         resp: null,
         gihpy: {
             gifs: [],
@@ -13,10 +14,14 @@ var app = new Vue({
         user: {
             listedgroups: ['groupOne'],
             user_name: 'andreGarvin',
-            session: 'groupOne',
+            session: {
+              group: 'groupOne',
+              key: ''
+            },
             groups: {
               groupOne: {
                     name: 'groupOne',
+                    k: 'cats',
                     msgs: [],
                     attachments: [],
                     members: [],
@@ -26,6 +31,11 @@ var app = new Vue({
         }
     },
     methods: {
+        clearscreen: function() {
+
+          this.groupbin = false;
+          this.gihpy.gifs = [];
+        },
 
         // connectimg to the webserver
         connect: function() {
@@ -33,10 +43,10 @@ var app = new Vue({
             this.socket.on('join', function( msg ) {
 
                 // acive a nesw active user in the array of active user
-                this.user.groups[this.user.session].active_users.push( msg.user_name );
+                this.user.groups[this.user.session.group].active_users.push( msg.user_name );
 
                 // sends the acyual user_name use have
-                this.socket.emit('join', { user_name: this.user.user_name, session: this.user.session })
+                this.socket.emit('join', { user_name: this.user.user_name, group: this.user.session.group })
 
             }.bind(this));
         },
@@ -62,7 +72,7 @@ var app = new Vue({
 
             if ( this.msg.length !== 0 ) {
 
-                this.socket.emit(this.user.session, { type: 'text', msg: this.msg, time: '12:44 pm', user_name: this.user.user_name });
+                this.socket.emit(this.user.session.group, { type: 'text', msg: this.msg, time: '12:44 pm', user_name: this.user.user_name });
                 this.msg = '';
             }
         },
@@ -70,16 +80,16 @@ var app = new Vue({
         // recving messages
         recv_msg: function() {
 
-            this.socket.on(this.user.session, function( msg ) {
+            this.socket.on(this.user.session.group, function( msg ) {
 
-               this.user.groups[this.user.session].msgs.push( msg );
+               this.user.groups[this.user.session.group].msgs.push( msg );
             }.bind(this));
 
         },
 
         switchSessionChannel: function( groupName ) {
 
-          this.user.session = groupName;
+          this.user.session.group = groupName;
         },
 
         createGroup: function() {
@@ -88,7 +98,7 @@ var app = new Vue({
 
               var notInGroup = false;
 
-              for ( var j in this.user.groups ) {
+              for ( var j in this.user.session.groups ) {
                   if ( this.user.groups[j].name === groupName ) {
 
                       notInGroup = true;
@@ -159,7 +169,7 @@ var app = new Vue({
         // sending gifs to other on the channel
         send_gif: function( src ) {
 
-            this.socket.emit(this.user.session, { type: 'gif', src: src, time: '12:44 pm', user_name: this.user.user_name });
+            this.socket.emit(this.user.session.group, { type: 'gif', src: src, time: '12:44 pm', user_name: this.user.user_name });
             this.gihpy.gifs = [];
         }
     },
@@ -168,13 +178,13 @@ var app = new Vue({
 
             function sendURL( url ) {
 
-              this.socket.emit(this.user.session, { type: 'url', link: url, user_name: this.user.user_name, time: '12:44 pm'} );
+              this.socket.emit(this.user.group, { type: 'url', link: url, user_name: this.user.user_name, time: '12:44 pm'} );
               return true;
             }
 
             function sendIMAGE( src ) {
 
-              this.socket.emit(this.user.session, { type: 'src', 'src': src, user_name: this.user.user_name, time: '12:44 pm' });
+              this.socket.emit(this.user.session.group, { type: 'src', 'src': src, user_name: this.user.user_name, time: '12:44 pm' });
               return true;
             }
 
@@ -217,9 +227,6 @@ var app = new Vue({
                 this.load_gifs();
             }
         }
-    },
-    url: function() {
-      this.gihpy.gifs = [];
     }
 });
 
