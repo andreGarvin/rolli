@@ -31,6 +31,15 @@ var app = new Vue({
         }
     },
     methods: {
+        getuser_name: function() {
+            var user_name = prompt('eneter user name');
+
+            if ( user_name ) {
+
+                this.user.user_name = user_name;
+            }
+        },
+
         clearscreen: function() {
 
           this.groupbin = false;
@@ -234,3 +243,6 @@ var app = new Vue({
 app.connect();
 // recving message
 app.recv_msg();
+
+
+app.getuser_name();
