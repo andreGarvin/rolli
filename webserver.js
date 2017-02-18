@@ -37,17 +37,7 @@ const groups = {};
 
 app.get('/:username', function( req, resp ) {
 
-  let gacc;
-
-  for ( var i in users ) {
-      if ( i.name == req.params.username ) {
-          gacc = i;
-          return gacc;
-      }
-  }
-
   resp.sendFile( `${ __dirname  }/index.html` );
-  // resp.json( gacc );
 });
 
 app.post('/group', ( req, resp ) => {
@@ -69,9 +59,9 @@ io.on('connection', function( socket ) {
     console.log( msg );
   });
 
-   socket.on('groupOne', function( msg ) {
+   socket.on('global', function( msg ) {
      
-      io.emit('groupOne', msg);
+      io.emit('global', msg);
    });
 
   socket.on('disconnect', function( scoket ) {

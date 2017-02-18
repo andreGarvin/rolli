@@ -15,12 +15,12 @@ var app = new Vue({
             listedgroups: ['groupOne'],
             user_name: 'andreGarvin',
             session: {
-              group: 'groupOne',
+              group: 'global',
               key: ''
             },
             groups: {
-              groupOne: {
-                    name: 'groupOne',
+              global: {
+                    name: 'global',
                     k: 'cats',
                     msgs: [],
                     attachments: [],
@@ -31,13 +31,16 @@ var app = new Vue({
         }
     },
     methods: {
+        
         getuser_name: function() {
-            var user_name = prompt('eneter user name');
-
-            if ( user_name ) {
-
-                this.user.user_name = user_name;
+            
+            var user_name = '';
+            
+            while ( user_name.length === 0 ) {
+                var user_name = prompt('eneter user name');
             }
+            
+            this.user.user_name = user_name;
         },
 
         clearscreen: function() {
@@ -179,6 +182,7 @@ var app = new Vue({
         send_gif: function( src ) {
 
             this.socket.emit(this.user.session.group, { type: 'gif', src: src, time: '12:44 pm', user_name: this.user.user_name });
+            this.socket.user.groups.global.push( { type: 'gif', src: src, time: '12:44 pm', user_name: this.user.user_name } );
             this.gihpy.gifs = [];
         }
     },
