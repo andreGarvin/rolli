@@ -12,7 +12,7 @@ var app = new Vue({
             gifs: [],
         },
         user: {
-            listedgroups: ['groupOne'],
+            listedgroups: ['global'],
             user_name: 'andreGarvin',
             session: {
               group: 'global',
