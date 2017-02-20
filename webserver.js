@@ -21,21 +21,9 @@ var port = process.env.PORT || 3000;
 
 app.use(express.static(__dirname));
 
-var users = [
-  {
-    username: 'andreGravin',
-    groups: ['groupOne'],
-    admin: false
-  },
-  {
-    username: 'jhon doe',
-    groups: ['groupTwo', 'meme'],
-    admin: ['groupTwo', 'meme']
-  }
-];
-const groups = {};
+const users = {};
 
-app.get('/:username', function( req, resp ) {
+app.get('/', function( req, resp ) {
 
   resp.sendFile( `${ __dirname  }/index.html` );
 });
@@ -49,25 +37,32 @@ app.post('/group', ( req, resp ) => {
 
 io.on('connection', function( socket ) {
 
-  console.log('user ', socket.id, ' has joined');
+      socket.on('join', function( msg ) {
+
+            users[ msg.user_name ] = socket.id;
+            io.emit( msg );
+
+            console.log(`${ msg.user_name } has joined the chat room.`);
+      });
 
 
-  socket.emit('join', { user_id: socket.id, user_name: 'andreGarvin', msg: 'New user joined.' });
+     socket.on('global', function( msg ) {
 
-  socket.on('join', function( msg ) {
+          io.emit('global', msg);
+     });
 
-    console.log( msg );
-  });
 
-   socket.on('global', function( msg ) {
-     
-      io.emit('global', msg);
-   });
 
-  socket.on('disconnect', function( scoket ) {
+     socket.on('disconnect', function( scoket ) {
 
-    console.log(socket.id, ' left.');
-  });
+            for ( var j in users ) {
+                if ( users[j] === socket.id ) {
+
+                    delete( j );
+                    console.log(`${ j } has left the chat room.`);
+                }
+           }
+     });
 
 });
 
@@ -75,5 +70,5 @@ io.on('connection', function( socket ) {
 // running th chat app
 rolli_server.listen( port, function(){
 
-  console.log('listening on *:'+ port);
+  console.log(`listening on *: ${ port }`);
 });
