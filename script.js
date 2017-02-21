@@ -99,6 +99,8 @@ var app = new Vue({
         // loding gifs
         load_gifs: function() {
 
+              this.gif_query = '';
+
               if ( this.gihpy.gifs.length === 0 ){
 
 
@@ -123,6 +125,7 @@ var app = new Vue({
 
                 this.socket.emit(this.user.session.group, { type: 'gif', src: src, time: '12:44 pm', user_name: this.user.user_name });
                 this.gihpy.gifs = [];
+                this.gif_query = '';
             },
 
             clearscreen: function() {
