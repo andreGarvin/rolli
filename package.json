@@ -3,27 +3,16 @@
   "version": "1.0.0",
   "description": "Group chat app",
   "main": "webserver.js",
-  "engines": {
-    "node": "6.4.0"
-  },
   "scripts": {
     "start": "node webserver.js"
   },
   "author": "andreGarvin",
   "license": "MIT",
   "dependencies": {
+    "ejs": "2.4.1",
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "nodemon": "^1.11.0",
     "socket.io": "^1.7.2"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/heroku/rolli"
-  },
-  "keywords": [
-    "node",
-    "heroku",
-    "express"
-  ],
+  }
 }

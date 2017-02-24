@@ -17,8 +17,9 @@
                       <h1 class='col-md-2 col-xs-2'> Rolli </h1>
                       <input type="text" class="form-control" v-model='query' placeholder='search' />
 
+                      <button @click='createGroup' type="button" class="btn btn-success">add group</button>
                       <div v-for='group in user.listedgroups' class='col-md-12 col-xs-12'>
-                        <p class="group-tag text-center"> {{ group }} </p>
+                        <p @click='switchSessionChannel( group )' class="group-tag text-center"> {{ group }} </p>
                       </div>
                   </div>
 

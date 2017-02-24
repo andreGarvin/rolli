@@ -1,4 +1,6 @@
-var app = new Vue({
+const date = new Date;
+
+const app = new Vue({
     el: '#app',
     data: {
         socket: io(),
@@ -8,6 +10,7 @@ var app = new Vue({
         seen: true,
         groupbin: false,
         resp: null,
+        curr_date: `${ date.getMonth() }/${ date.getDate() }/${ date.getFullYear() } ${ date.getHours() - 12 }:${ date.getMinutes() }`,
         gihpy: {
             gifs: [],
         },
@@ -16,12 +19,12 @@ var app = new Vue({
             user_name: 'andreGarvin',
             session: {
               group: 'global',
-              key: ''
+              key: 'meme_cats'
             },
             groups: {
               global: {
                     name: 'global',
-                    k: 'cats',
+                    k: 'meme_cats',
                     msgs: [],
                     attachments: [],
                     members: [],
@@ -44,13 +47,11 @@ var app = new Vue({
             }
 
             this.user.user_name = user_name;
-            this.socket.emit('join', { 'user_name': user_name, group: 'global', whisper: [] });
+            this.socket.emit('join', { 'user_name': user_name, groups: Object.keys( this.user.groups ), whisper: [] });
 
             this.socket.on('join', function( msg ) {
 
-              console.log( msg );
-              // this.user.groups.global.active_users.push( msg );
-              // this.user.groups.global.members.push( msg );
+                 console.log( msg );
             });
         },
 
@@ -61,11 +62,11 @@ var app = new Vue({
 
                 if ( this.msg.slice(0, 2) === 'w/' ) {
 
-                  this.socket.emit(this.user.session.group,{ type: 'whisper', recp: this.user.user_name, recv: this.msg.split(' ')[1].split(':')[0], msg: this.msg.split(' ').slice(2, this.msg.length).join(' '), time: '12:44 pm' });
+                    this.socket.emit(this.user.session.group,{ type: 'whisper', recp: this.user.user_name, recv: this.msg.split(' ')[1].split(':')[0], msg: this.msg.split(' ').slice(2, this.msg.length).join(' '), time: this.curr_date, session: this.user.session });
                 }
                 else {
 
-                    this.socket.emit(this.user.session.group, { type: 'text', msg: this.msg, time: '12:44 pm', user_name: this.user.user_name });
+                    this.socket.emit(this.user.session.group, { type: 'text', msg: this.msg, time: this.curr_date, user_name: this.user.user_name, session: this.user.session });
                 }
 
                 this.msg = '';
@@ -78,16 +79,17 @@ var app = new Vue({
 
             this.socket.on(this.user.session.group, function( msg ) {
 
+                // finish whisper function
                 if ( msg.type === 'whisper' ) {
 
-                    var members = this.user.groups.global.members;
-                    for ( var m in members ) {
-
-                        console.log( members[m] );
-                        // if ( members[m].user_name === this.user.user_name )
-                        //     members[m].whisper.push( msg );
-
-                    }
+                    // var members = this.user.groups.global.members;
+                    // for ( var m in members ) {
+                    //
+                    //     console.log( members[m] );
+                    //     // if ( members[m].user_name === this.user.user_name )
+                    //     //     members[m].whisper.push( msg );
+                    //
+                    // }
                 }
                 else {
                       this.user.groups[this.user.session.group].msgs.push( msg );
@@ -134,62 +136,64 @@ var app = new Vue({
               this.gihpy.gifs = [];
             },
 
-            // switchSessionChannel: function( groupName ) {
-            //
-            //   this.user.session.group = groupName;
-            // },
+            switchSessionChannel: function( groupName ) {
 
-            // createGroup: function() {
-            //
-            //       var groupName = prompt('group name?');
-            //
-            //       var notInGroup = false;
-            //
-            //       for ( var j in this.user.session.groups ) {
-            //           if ( this.user.groups[j].name === groupName ) {
-            //
-            //               notInGroup = true;
-            //           }
-            //
-            //       }
-            //
-            //
-            //       if ( notInGroup === false ) {
-            //
-            //           if ( groupName )
-            //
-            //                  var new_group = {
-            //                           name: groupName,
-            //                           msgs: [],
-            //                           attachments: [],
-            //                           members: [],
-            //                           active_users: []
-            //                   };
-            //
-            //                   const app = this;
-            //                   axios.post('http://localhost:3000/group', new_group)
-            //                        .then( ( resp ) => {
-            //
-            //                              if ( resp.data.status === true )
-            //
-            //                                  this.user.listedgroups.push( groupName );
-            //
-            //                                  this.user.groups[ groupName ] = {
-            //                                      name: groupName,
-            //                                      attachments: [],
-            //                                      members: [],
-            //                                      msgs: [],
-            //                                      active_members: []
-            //                                  }
-            //                         });
-            //
-            //       }
-            //       else {
-            //
-            //           alert(`groroup '${ groupName }' exist.`);
-            //       }
+              this.user.session.group = groupName;
+            },
 
-            // },
+            createGroup: function() {
+
+                  var groupName = prompt('group name?');
+
+                  var notInGroup = false;
+
+                  for ( var j in this.user.session.groups ) {
+                      if ( this.user.groups[j].name === groupName ) {
+
+                          notInGroup = true;
+                      }
+
+                  }
+
+
+                  if ( notInGroup === false ) {
+
+                      if ( groupName )
+
+                             var new_group = {
+                                      name: groupName,
+                                      msgs: [],
+                                      attachments: [],
+                                      members: [],
+                                      active_users: []
+                              };
+
+                              const app = this;
+                              axios.post('http://localhost:3000/group', new_group)
+                                   .then( ( resp ) => {
+
+                                         if ( resp.data.status === true )
+
+                                             this.user.listedgroups.push( groupName );
+
+                                             this.user.groups[ groupName ] = {
+                                                 name: groupName,
+                                                 attachments: [],
+                                                 members: [],
+                                                 msgs: [],
+                                                 active_members: []
+                                             }
+
+                                             alert( resp.msg );
+                                    });
+
+                  }
+                  else {
+
+                      alert(`groroup '${ groupName }' exist.`);
+                  }
+
+            }
             // searching for groups from rolli webserver
             // search: function( query, user_name ) {
             //
