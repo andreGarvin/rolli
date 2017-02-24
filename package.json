@@ -1,0 +1,17 @@
+{
+  "name": "rolli",
+  "version": "1.0.0",
+  "description": "Group chat app",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "andreGarvin",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "nodemon": "^1.11.0",
+    "socket.io": "^1.7.2"
+  }
+}
