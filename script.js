@@ -110,9 +110,17 @@ const app = new Vue({
                 }
                 else {
 
+                      if ( msg.type === 'gif' || msg.type === 'src' || msg.type === 'url' ) {
+
+                         // recv the message from bakend
+                            // appends to the attchments
+                         this.user.groups[this.user.session.group].attachments.push( msg );
+                      }
+
                       // recv the message from bakend
                       this.user.groups[this.user.session.group].msgs.push( msg );
                 }
+
              }.bind(this));
 
         },
