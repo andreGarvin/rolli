@@ -14,6 +14,9 @@ var io = require('socket.io')(rolli_server);
 // file system module in core node modules
 var fs = require('fs');
 
+// the rolli-bot code
+var bot = require('./bot.js');
+
 // used to able to send and recevie JSON objects to the beakend and frontend
 app.use(BodyParser.urlencoded({ extended: true }));
 app.use(BodyParser.json());
@@ -32,6 +35,7 @@ const users = {};
 // getting the groups.json file to load
 var groups = JSON.parse( fs.readFileSync('groups.json') );
 
+// console.log( bot.data.send_gif() );
 
 // rolli url paths:
 
@@ -101,10 +105,21 @@ var groups = JSON.parse( fs.readFileSync('groups.json') );
                  }
                  else if ( msg.session.group === 'rolli-bot' ) {
 
-                          groups['rolli-bot'].msgs.push( msg );
+                          for ( var user in groups['rolli-bot'].msgs ) {
 
+                               if ( user === msg.user_name ) {
+                                   groups['rolli-bot'].msgs[user].push( msg );
+                               }
+                               else {
+
+                                     groups['rolli-bot'].msgs[msg.user_name] = [];
+                                     groups['rolli-bot'].msgs[msg.user_name].push( msg );
+                               }
+                          }
+
+                          var bot_response = [ bot.data.send_gif(), bot.data.reply() ];
                           // send/'emit' the msg the the channel/session
-                          io.emit('rolli-bot', msg);
+                          io.emit('rolli-bot', { type: 'bot', resp: bot_response[ Math.floor(Math.random() * bot_response.length)], time: bot.data.curr_time, recv: msg.user_name });
                  }
                  else {
 
