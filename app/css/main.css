@@ -1,13 +1,13 @@
-html, body{
+html, body {
     height: 100%
 }
 
 .navbar {
-  margin-bottom: 0px;
+    margin-bottom: 0px;
 }
 
 .navbar.btn {
-  margin: 20px;
+    margin: 20px;
 }
 
 .sidebar-nav {
@@ -25,11 +25,11 @@ html, body{
 }
 
 .sidebar-nav h1 {
-  color: #eee;
+    color: #eee;
 }
 
 .sidebar-nav .btn {
-  margin-top: 20px
+    margin-top: 20px
 }
 
 .sidebar-nav input {
@@ -80,9 +80,9 @@ html, body{
 }
 
 .gif {
-  margin: 10px;
-  height: 200px;
-  width: 200px;
+    margin: 10px;
+    height: 200px;
+    width: 200px;
 }
 
 .input-box {
@@ -115,22 +115,29 @@ ul {
 }
 
 .bin input {
-  margin-top: 20px;
-  margin-bottom: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .bin .btn {
-  margin-left: 6px;
+    margin-left: 6px;
 }
 
 .group-tag {
-  background-color: transparent;
-  border: 1px solid #eee;
-  /*border: 1px solid #557;*/
-  margin-bottom: 10px;
-  border-radius: 2px;
-  margin-top: 10px;
-  cursor: pointer;
-  padding: 10px;
-  color: #fff;
+    background-color: transparent;
+    border: 1px solid #eee;
+    /*border: 1px solid #557;*/
+    margin-bottom: 10px;
+    border-radius: 2px;
+    margin-top: 10px;
+    cursor: pointer;
+    padding: 10px;
+    color: #fff;
+}
+#feedback {
+    margin-top: 50px;
+}
+#feedback .btn {
+    margin-top: 20px;
+    margin-left: 0px;
 }

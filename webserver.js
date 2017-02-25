@@ -54,6 +54,15 @@ var groups = JSON.parse( fs.readFileSync('groups.json') );
       resp.sendFile(`${ __dirname }/app/feedback.html`)
     });
 
+    app.post('/feedback', function( req, resp ) {
+
+        var post_data = req.body;
+        if ( post_data.msg.length !== 0 && post_data.user_name.length !== 0 )
+            reps.json({ status: true, msg: `Thank you for your feedback ${ post_data.user_name }` });
+
+        resp.json({ status: false, msg: 'ERROR: A error occured trying the send feddback mesage. Please provide a real user name and message.' });
+    });
+
     // creating new groups
     app.post('/group', ( req, resp ) => {
 
@@ -84,15 +93,17 @@ var groups = JSON.parse( fs.readFileSync('groups.json') );
                 // finds the chat rooms the user is in and is OAuthenticated to be in the chat rooms
                 var user_groups = {};
                 for ( var i in groups ) {
-
+                    var members = groups[i]['members'];
+                    console.log( groups[i]['members'] );
                     // cheks to see if the user is in the memebers board/array
-                    if ( groups[i].members.includes( msg.user_name ) ) {
+                    if ( members.includes( msg.user_name ) && i !== "feedback" ) {
 
                         // if the user belongs in the chat room inset in into the 'user_groups' object
                         user_groups[ i ] = groups[ i ];
                     }
                 }
 
+                console.log( Object.keys( user_groups ) );
                 // if the user is not in any group send them the defualt group chat
                 if ( Object.keys( user_groups ).length === 0 ) {
 
@@ -145,7 +156,7 @@ var groups = JSON.parse( fs.readFileSync('groups.json') );
                        for ( var g in groups ) {
 
                             // checks if the user belongs in the group chat room and has the 'key' to the group chat room
-                            if ( msg.session.group === g && msg.session.k === groups[g].k && groups[g].members.includes( msg.user_name ) ) {
+                            if ( msg.session.group === g && msg.session.k === groups[g].k && groups[g].members.includes( msg.user_name ) && g !== "feedback" ) {
 
                                 // send/'emits' or send the message rto the actul group and appends it to the 'group[<group name>].msgs' array
                                 groups[g].msgs.push( msg )

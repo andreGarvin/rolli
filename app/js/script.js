@@ -216,6 +216,7 @@ const app = new Vue({
                              var new_group = {
                                       name: groupName,
                                       msgs: [],
+                                      admin: this.user.user_name,
                                       attachments: [],
                                       requests: [],
                                       members: [],
