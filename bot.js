@@ -1,8 +1,4 @@
 var request = require('request');
-// var BodyParser = require('body-parser');
-
-// app.use(BodyParser.urlencoded({ extended: true }));
-// app.use(BodyParser.json());
 
 var date = new Date;
 

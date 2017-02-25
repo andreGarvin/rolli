@@ -26,7 +26,7 @@ app.use(BodyParser.json());
 var port = process.env.PORT || 3000;
 
 // getting acess to the files in the current working directory
-app.use(express.static(__dirname));
+app.use(express.static(`${__dirname}/app`));
 
 
 // decalring varibles useed in the nodejs webserver/sockets
@@ -43,7 +43,15 @@ var groups = JSON.parse( fs.readFileSync('groups.json') );
     app.get('/', function( req, resp ) {
 
         // sends a response of the file hosting the chat rooms
-        resp.sendFile( `${ __dirname  }/index.html` );
+        resp.sendFile( `${ __dirname  }/app/index.html` );
+    });
+
+
+    // feedbak route
+    app.get('/feedback', function( req, resp ) {
+
+      //  sending the feedbak page
+      resp.sendFile(`${ __dirname }/app/feedback.html`)
     });
 
     // creating new groups
