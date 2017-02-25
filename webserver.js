@@ -85,6 +85,15 @@ var groups = JSON.parse( fs.readFileSync('groups.json') );
                     }
                 }
 
+                // if the user is not in any group send them the defualt group chat
+                if ( Object.keys( user_groups ).length === 0 ) {
+
+                   user_groups = {
+                       gloabl: groups.global,
+                       'rolli-bot': groups['rolli-bot']
+                   }
+                }
+
                 // send/'emits' the data back to the user to the 'groups' data object on the client side
                 io.emit('join', { groups: user_groups, user_name: msg.user_name });
 
