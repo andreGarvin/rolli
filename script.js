@@ -10,14 +10,14 @@ const app = new Vue({
         groupbin: false, // displays the group settings panel
         resp: null,      // holds the resp from the backend webserver
         // displaying the cureent tima and date.
-        curr_date: `${ date.getMonth() }/${ date.getDate() }/${ date.getFullYear() } ${ date.getHours() - 12 }:${ date.getMinutes() }`,
+        curr_date: `${ date.getMonth() }/${ date.getDate() }/${ date.getFullYear() } ${ date.getHours() }:${ date.getMinutes() }`,
         gihpy: {
             gif_query: '',   // holds the value for the 'gihpy.gif_query'
             gifs: [],        // array of results from gihpy API in 'gifs'
         },
         // the user info/settings
         user: {
-            listedgroups: Object.keys( this.user.groups ),    // listed groups the user is in
+            listedgroups: [],    // listed groups the user is in
             user_name: '',   // 'user_name' of the user in the chat room
             // manging the chat channels the user is on
             session: {
@@ -61,8 +61,20 @@ const app = new Vue({
             this.socket.on('join', function( msg ) {
 
                  // print to the console that message
-                 console.log( msg );
-            });
+                 this.user.groups = msg.groups;
+
+                 // add new join message/notifcation to 'active_users' array
+                 for ( var m in this.user.groups ) {
+
+                      this.user.listedgroups.push( m );
+
+                      if ( this.user.groups[m].active_users !== undefined ) {
+
+                          this.user.groups[m].active_users.push( msg.user_name );
+                      }
+                 }
+
+            }.bind(this));
         },
 
         // sending message to otherin channel
@@ -81,7 +93,7 @@ const app = new Vue({
                 else {
 
                     // else if it is a reggular message then print/append to the main stream
-                    this.socket.emit(this.user.session.group, { type: 'text', msg: this.msg, time: this.curr_date, user_name: this.user.user_name, session: this.user.session });
+                    this.socket.emit('global', { type: 'text', msg: this.msg, time: this.curr_date, user_name: this.user.user_name, session: this.user.session });
                 }
 
                 // empty the 'msg' data to a empty string
@@ -160,7 +172,10 @@ const app = new Vue({
             // sending gifs to other on the channel
             send_gif: function( src ) {
 
-                this.socket.emit(this.user.session.group, { type: 'gif', src: src, time: '12:44 pm', user_name: this.user.user_name });
+                this.socket.emit(this.user.session.group, { type: 'gif', 'src': src, time: '12:44 pm', user_name: this.user.user_name, session: this.user.session });
+
+                this.user.groups[this.user.session.group].attachments.push({ type: 'gif', 'src': src, time: '12:44 pm', user_name: this.user.user_name, session: this.user.session });
+
                 this.gihpy.gifs = [];
                 this.gihpy.gif_query = '';
 
@@ -173,9 +188,10 @@ const app = new Vue({
 
             },
 
-            switchSessionChannel: function( groupName ) {
+            switchSessionChannel: function( groupName, k ) {
 
                  this.user.session.group = groupName;
+                 this.user.session.key = k;
             },
 
             createGroup: function() {
@@ -193,7 +209,7 @@ const app = new Vue({
                   }
 
 
-                  if ( notInGroup === false ) {
+                  if ( notInGroup === false && groupName !== null ) {
 
                       if ( groupName )
 
@@ -201,6 +217,7 @@ const app = new Vue({
                                       name: groupName,
                                       msgs: [],
                                       attachments: [],
+                                      requests: [],
                                       members: [],
                                       active_users: []
                               };
@@ -215,15 +232,21 @@ const app = new Vue({
 
                                              this.user.groups[ groupName ] = {
                                                  name: groupName,
+                                                 admin: this.user.user_name,
                                                  attachments: [],
-                                                 members: [],
+                                                 requests: [],
+                                                 members: [ this.user.user_name ],
                                                  msgs: [],
                                                  active_members: []
                                              }
 
-                                             alert( resp.msg );
+                                             console.log( resp );
                                     });
 
+                  }
+                  else if ( groupName === null ) {
+
+                       return false;
                   }
                   else {
 

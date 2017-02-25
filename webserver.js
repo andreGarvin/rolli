@@ -14,7 +14,6 @@ var io = require('socket.io')(rolli_server);
 // file system module in core node modules
 var fs = require('fs');
 
-
 // used to able to send and recevie JSON objects to the beakend and frontend
 app.use(BodyParser.urlencoded({ extended: true }));
 app.use(BodyParser.json());
@@ -66,48 +65,65 @@ var groups = JSON.parse( fs.readFileSync('groups.json') );
                    once  user joins the channel save the user to the
                    'users'  object keeping track of the user on the chat rooms
                    or ative, but to see who logs off. displaying aand removing
-                   people from ertain list like 'active_users' array
+                   people from certain list like 'active_users' array
                 */
                 users[ msg.user_name ] = socket.id;
 
                 // finds the chat rooms the user is in and is OAuthenticated to be in the chat rooms
                 var user_groups = {};
-                for ( var i  in groups ) {
+                for ( var i in groups ) {
 
                     // cheks to see if the user is in the memebers board/array
-                    if ( msg.user_name in groups[msg.groups[i]].members ) {
+                    if ( groups[i].members.includes( msg.user_name ) ) {
 
                         // if the user belongs in the chat room inset in into the 'user_groups' object
-                        user_groups[ msg.groups[i] ] = groups[ msg.groups[i] ];
+                        user_groups[ i ] = groups[ i ];
                     }
                 }
 
                 // send/'emits' the data back to the user to the 'groups' data object on the client side
-                io.emit('join', user_groups);
+                io.emit('join', { groups: user_groups, user_name: msg.user_name });
 
                 // logs to the console the new user that has joined the chat room/website rolli
                 console.log(`${ msg.user_name } has joined the chat room.`);
           });
 
-          //
+          //the global channel/session
           socket.on('global', function( msg ) {
 
-                 // sen the msg the the channel/session
-                 io.emit('global', msg);
+                 if ( msg.session.group === 'global' && msg.session.key === groups.global.k ) {
 
-                 // goes over all the group chats to see which message to send the messge to'
-                    // alos saves/appends the msg to the atual 'groups' object
-                 for ( var g in groups ) {
+                      groups.global.msgs.push( msg );
 
-                      // checks if the user belongs in the group chat room and has the 'key' to the group chat room
-                      if ( msg.session.group === groups[g].name && msg.session.k === groups[g].k && msg.user_name in groups[g].members ) {
+                     // send/'emit' the msg the the channel/session
+                     io.emit('global', msg);
 
-                          // send/'emits' or send the message rto the actul group and appends it to the 'group[<group name>].msgs' array
+                 }
+                 else if ( msg.session.group === 'rolli-bot' ) {
 
-                          io.emit(groups[g].name, { type: msg.type, msg: msg.msg, time: msg.time, user_name: msg.user_name });
-                      }
+                          groups['rolli-bot'].msgs.push( msg );
+
+                          // send/'emit' the msg the the channel/session
+                          io.emit('rolli-bot', msg);
+                 }
+                 else {
+
+                       // goes over all the group chats to see which message to send the messge to'
+                          // also saves/appends the msg to the atual 'groups' object
+                       for ( var g in groups ) {
+
+                            // checks if the user belongs in the group chat room and has the 'key' to the group chat room
+                            if ( msg.session.group === g && msg.session.k === groups[g].k && groups[g].members.includes( msg.user_name ) ) {
+
+                                // send/'emits' or send the message rto the actul group and appends it to the 'group[<group name>].msgs' array
+                                groups[g].msgs.push( msg )
+                                io.emit(g, msg);
+                            }
+                        }
+
                   }
 
+                  fs.writeFile('groups.json', JSON.stringify( groups, null, 4 ) );
             });
 
 
