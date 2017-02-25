@@ -19,7 +19,7 @@
 
                       <button @click='createGroup' type="button" class="btn btn-success">add group</button>
                       <div v-for='group in user.listedgroups' class='col-md-12 col-xs-12'>
-                        <p @click='switchSessionChannel( group )' class="group-tag text-center"> {{ group }} </p>
+                        <p @click='switchSessionChannel( group, user.groups[group].k )' class="group-tag text-center"> {{ group }} </p>
                       </div>
                   </div>
 
