@@ -4,7 +4,8 @@
   "description": "Group chat app",
   "main": "webserver.js",
   "scripts": {
-    "start": "node webserver.js"
+    "start": "node .",
+    "rolli": "nodemon ."
   },
   "author": "andreGarvin",
   "license": "MIT",

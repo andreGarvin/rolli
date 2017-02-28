@@ -26,7 +26,7 @@ app.use(BodyParser.json());
 var port = process.env.PORT || 3000;
 
 // getting acess to the files in the current working directory
-app.use(express.static(__dirname + '/app'));
+app.use(express.static(`${__dirname}/app`));
 
 
 // decalring varibles useed in the nodejs webserver/sockets
@@ -34,6 +34,22 @@ const users = {};
 
 // getting the groups.json file to load
 var groups = JSON.parse( fs.readFileSync('groups.json') );
+
+
+// made a similar includes() function cause the server keeps yelling 
+// at me syaing its not a function because its a es7 || es6 function
+function includes( array, item ) {
+     
+    for ( var i in array ) {
+         
+        if ( array[i] === item ) {
+              
+            return true;
+        }
+    }
+    
+    return false; 
+}
 
 // console.log( bot.data.send_gif() );
 
@@ -43,7 +59,24 @@ var groups = JSON.parse( fs.readFileSync('groups.json') );
     app.get('/', function( req, resp ) {
 
         // sends a response of the file hosting the chat rooms
-        resp.sendFile( `${ __dirname  }/index.html` );
+        resp.sendFile( `${ __dirname  }/app/index.html` );
+    });
+
+
+    // feedbak route
+    app.get('/feedback', function( req, resp ) {
+
+      //  sending the feedbak page
+      resp.sendFile(`${ __dirname }/app/feedback.html`)
+    });
+
+    app.post('/feedback', function( req, resp ) {
+
+        var post_data = req.body;
+        if ( post_data.msg.length !== 0 && post_data.user_name.length !== 0 )
+            reps.json({ status: true, msg: `Thank you for your feedback ${ post_data.user_name }` });
+
+        resp.json({ status: false, msg: 'ERROR: A error occured trying the send feddback mesage. Please provide a real user name and message.' });
     });
 
     // creating new groups
@@ -76,13 +109,23 @@ var groups = JSON.parse( fs.readFileSync('groups.json') );
                 // finds the chat rooms the user is in and is OAuthenticated to be in the chat rooms
                 var user_groups = {};
                 for ( var i in groups ) {
-
+                    var members = groups[i]['members'];
                     // cheks to see if the user is in the memebers board/array
-                    if ( groups[i].members[0] === msg.user_name ) {
 
+                    if ( includes(members, msg.user_name ) && i !== "feedback" ) {
                         // if the user belongs in the chat room inset in into the 'user_groups' object
                         user_groups[ i ] = groups[ i ];
                     }
+                }
+
+                console.log( Object.keys( user_groups ) );
+                // if the user is not in any group send them the defualt group chat
+                if ( Object.keys( user_groups ).length === 0 ) {
+
+                   user_groups = {
+                       gloabl: groups.global,
+                       'rolli-bot': groups['rolli-bot']
+                   }
                 }
 
                 // send/'emits' the data back to the user to the 'groups' data object on the client side
@@ -128,7 +171,7 @@ var groups = JSON.parse( fs.readFileSync('groups.json') );
                        for ( var g in groups ) {
 
                             // checks if the user belongs in the group chat room and has the 'key' to the group chat room
-                            if ( msg.session.group === g && msg.session.k === groups[g].k && groups[g].members.includes( msg.user_name ) ) {
+                            if ( msg.session.group === g && msg.session.k === groups[g].k && includes(groups[g].members, msg.user_name ) && g !== "feedback" ) {
 
                                 // send/'emits' or send the message rto the actul group and appends it to the 'group[<group name>].msgs' array
                                 groups[g].msgs.push( msg )
