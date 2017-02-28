@@ -26,7 +26,7 @@ app.use(BodyParser.json());
 var port = process.env.PORT || 3000;
 
 // getting acess to the files in the current working directory
-app.use(express.static(__dirname));
+app.use(express.static(__dirname + '/app'));
 
 
 // decalring varibles useed in the nodejs webserver/sockets
@@ -78,7 +78,7 @@ var groups = JSON.parse( fs.readFileSync('groups.json') );
                 for ( var i in groups ) {
 
                     // cheks to see if the user is in the memebers board/array
-                    if ( groups[i].members.includes( msg.user_name ) ) {
+                    if ( groups[i].members[0] === msg.user_name ) {
 
                         // if the user belongs in the chat room inset in into the 'user_groups' object
                         user_groups[ i ] = groups[ i ];

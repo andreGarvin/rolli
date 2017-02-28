@@ -72,6 +72,46 @@
                     "group": "global",
                     "key": "meme_cats"
                 }
+            },
+            {
+                "type": "text",
+                "msg": "hey",
+                "time": "1/27/201710:26",
+                "user_name": "andreGarvin",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "hello, world!",
+                "time": "1/27/201710:26",
+                "user_name": "andreGarvin",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "gif",
+                "src": "https://media2.giphy.com/media/l44Qdv43pGxw9giuA/100w.gif",
+                "time": "12:44 pm",
+                "user_name": "andreGarvin",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "gif",
+                "src": "https://media2.giphy.com/media/l44Qdv43pGxw9giuA/100w.gif",
+                "time": "12:44 pm",
+                "user_name": "andreGarvin",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
             }
         ],
         "attachemnts": [],
@@ -91,4 +131,3 @@
         ]
     }
 }
-
