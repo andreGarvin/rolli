@@ -4,12 +4,12 @@
   "description": "Group chat app",
   "main": "webserver.js",
   "scripts": {
-    "start": "node webserver.js"
+    "start": "node .",
+    "rolli": "nodemon ."
   },
   "author": "andreGarvin",
   "license": "MIT",
   "dependencies": {
-    "ejs": "2.4.1",
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "nodemon": "^1.11.0",
