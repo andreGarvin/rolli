@@ -5,8 +5,8 @@
         "msgs": [
             {
                 "type": "text",
-                "msg": "hey",
-                "time": "1/25/2017 4:17",
+                "msg": "Hey wassup",
+                "time": "1/28/2017 12:16",
                 "user_name": "andreGarvin",
                 "session": {
                     "group": "global",
@@ -15,98 +15,8 @@
             },
             {
                 "type": "text",
-                "msg": "hey wasup",
-                "user_name": "andreGarvin",
-                "time": "1/25/2017 4:18",
-                "session": {
-                    "group": "global",
-                    "key": "meme_cats"
-                }
-            },
-            {
-                "type": "text",
-                "msg": "my messages are saved yes",
-                "user_name": "andreGarvin",
-                "time": "1/25/2017 4:19",
-                "session": {
-                    "group": "global",
-                    "key": "meme_cats"
-                }
-            },
-            {
-                "type": "text",
-                "msg": "now for multi group chats whaooo!!",
-                "user_name": "andreGarvin",
-                "time": "1/25/2017 4:19",
-                "session": {
-                    "group": "global",
-                    "key": "meme_cats"
-                }
-            },
-            {
-                "type": "gif",
-                "src": "https://media0.giphy.com/media/xT8qAY7e9If38xkrIY/100w.gif",
-                "time": "4:30 pm",
-                "user_name": "andreGarvin",
-                "session": {
-                    "group": "global",
-                    "key": "meme_cats"
-                }
-            },
-            {
-                "type": "gif",
-                "src": "https://media1.giphy.com/media/3o84U2yXgSn6KHAXpS/100w.gif",
-                "time": "4:30 pm",
-                "user_name": "andreGarvin",
-                "session": {
-                    "group": "global",
-                    "key": "meme_cats"
-                }
-            },
-            {
-                "type": "text",
-                "msg": "hey",
-                "time": "1/25/2017 4:45",
-                "user_name": "andreGarvin",
-                "session": {
-                    "group": "global",
-                    "key": "meme_cats"
-                }
-            },
-            {
-                "type": "text",
-                "msg": "hey",
-                "time": "1/27/201710:26",
-                "user_name": "andreGarvin",
-                "session": {
-                    "group": "global",
-                    "key": "meme_cats"
-                }
-            },
-            {
-                "type": "text",
-                "msg": "hello, world!",
-                "time": "1/27/201710:26",
-                "user_name": "andreGarvin",
-                "session": {
-                    "group": "global",
-                    "key": "meme_cats"
-                }
-            },
-            {
-                "type": "gif",
-                "src": "https://media2.giphy.com/media/l44Qdv43pGxw9giuA/100w.gif",
-                "time": "12:44 pm",
-                "user_name": "andreGarvin",
-                "session": {
-                    "group": "global",
-                    "key": "meme_cats"
-                }
-            },
-            {
-                "type": "gif",
-                "src": "https://media2.giphy.com/media/l44Qdv43pGxw9giuA/100w.gif",
-                "time": "12:44 pm",
+                "msg": "ww",
+                "time": "1/28/2017 13:51",
                 "user_name": "andreGarvin",
                 "session": {
                     "group": "global",

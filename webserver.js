@@ -114,18 +114,21 @@ io.on('connection', function( socket ) {
 
                 if ( includes(members, msg.user_name ) && i !== "feedback" ) {
                     // if the user belongs in the chat room inset in into the 'user_groups' object
+                    
                     user_groups[ i ] = groups[ i ];
+                    
                 }
             }
 
-            console.log( Object.keys( user_groups ) );
             // if the user is not in any group send them the defualt group chat
             if ( Object.keys( user_groups ).length === 0 ) {
 
-               user_groups = {
-                   gloabl: groups.global,
-                   'rolli-bot': groups['rolli-bot']
-               }
+                user_groups = {
+                   gloabl: groups.global
+                }
+                
+                groups.global.members.push( msg.user_name );
+                // groups['rolli-bot'].members.push( msg.user_name );
             }
 
             // send/'emits' the data back to the user to the 'groups' data object on the client side
