@@ -11,7 +11,7 @@ const app = new Vue({
         resp: null,      // holds the resp from the backend webserver
         create_url: 'my-projects-andregarvin.c9users.io/group',
         // displaying the cureent tima and date.
-        curr_date: `${ date.getMonth() }/${ date.getDate() }/${ date.getFullYear() } ${ date.getHours() }:${ date.getMinutes() }`,
+        curr_date: date.getMonth() +'/'+ date.getDate() +'/'+ date.getFullYear() +' '+ date.getHours() +':'+ date.getMinutes(),
         gihpy: {
             gif_query: '',   // holds the value for the 'gihpy.gif_query'
             gifs: [],        // array of results from gihpy API in 'gifs'
@@ -226,7 +226,7 @@ const app = new Vue({
 
                               const app = this;
                               axios.post(this.create_url, new_group)
-                                   .then( ( resp ) => {
+                                   .then( function( resp ) {
 
                                          if ( resp.data.status === true )
 
@@ -252,7 +252,7 @@ const app = new Vue({
                   }
                   else {
 
-                      alert(`groroup '${ groupName }' exist.`);
+                      alert('groroup ' +  groupName + ' exist.');
                   }
 
             }
@@ -314,7 +314,7 @@ const app = new Vue({
 
                 var app = this;
 
-                axios.get(`https://api.giphy.com/v1/gifs/search?q=${ app.gihpy.gif_query}&api_key=dc6zaTOxFJmzC`)
+                axios.get('https://api.giphy.com/v1/gifs/search?q='+ app.gihpy.gif_query + '&api_key=dc6zaTOxFJmzC')
                     .then(function( resp ) {
 
                           app.gihpy.gifs = [];
