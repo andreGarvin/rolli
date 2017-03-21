@@ -1,0 +1,396 @@
+{
+    "global": {
+        "name": "global",
+        "k": "meme_cats",
+        "msgs": [
+            {
+                "type": "text",
+                "msg": "Hey wassup",
+                "time": "1/28/2017 12:16",
+                "user_name": "andreGarvin",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "ww",
+                "time": "1/28/2017 13:51",
+                "user_name": "andreGarvin",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "hello",
+                "time": "2/9/2017 18:5",
+                "user_name": "andreGarvin",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "hello?",
+                "time": "2/21/2017 10:17",
+                "user_name": "SendHelp",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "hello?",
+                "time": "2/21/2017 10:17",
+                "user_name": "SendHelp",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "suh",
+                "time": "2/21/2017 10:17",
+                "user_name": "7",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "lol",
+                "time": "2/21/2017 10:18",
+                "user_name": "hahahahahahaha",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "I want to kill myself",
+                "time": "2/21/2017 10:17",
+                "user_name": "erector",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "hello ",
+                "time": "2/21/2017 10:17",
+                "user_name": "oozingboy",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "jkganljgesa",
+                "time": "2/21/2017 10:17",
+                "user_name": "SendHelp",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "Hey Man",
+                "time": "2/21/2017 10:18",
+                "user_name": "Anarchy",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "hello",
+                "time": "2/21/2017 10:19",
+                "user_name": "",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "monkey monkey monkey",
+                "time": "2/21/2017 10:19",
+                "user_name": "Boosted Monkey",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "where is everyone ",
+                "time": "2/21/2017 10:19",
+                "user_name": "bc",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "lol ",
+                "time": "2/21/2017 10:19",
+                "user_name": "bc",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "HELLLooOOOOOOooooooOOOOooOOOoo",
+                "time": "2/21/2017 10:19",
+                "user_name": "",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "YOOOOOOooooOOO ",
+                "time": "2/21/2017 10:19",
+                "user_name": "bc",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "skert skert skert",
+                "time": "2/21/2017 10:19",
+                "user_name": "bc",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "hey boys",
+                "time": "2/21/2017 10:19",
+                "user_name": "kawaii boi xD",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": ".-.",
+                "time": "2/21/2017 10:19",
+                "user_name": "Boosted Monkey",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "pill, noose or bridge?",
+                "time": "2/21/2017 10:17",
+                "user_name": "erector",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "waerytjk",
+                "time": "2/21/2017 10:20",
+                "user_name": "qwerty",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "waerytjkwertkyj",
+                "time": "2/21/2017 10:20",
+                "user_name": "qwerty",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "waerytjkwertkyjwtuy",
+                "time": "2/21/2017 10:20",
+                "user_name": "qwerty",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "waerytjkwertkyjwtuyq",
+                "time": "2/21/2017 10:20",
+                "user_name": "qwerty",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "mmmmmmmm",
+                "time": "2/21/2017 10:20",
+                "user_name": "scholarly dropout ",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "www.xvideos.com",
+                "time": "2/21/2017 10:17",
+                "user_name": "erector",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "ahhhh",
+                "time": "2/21/2017 10:20",
+                "user_name": "scholarly dropout ",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "i am weakkkkk",
+                "time": "2/21/2017 10:22",
+                "user_name": "triggered memes",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "two in the pink, one in the stink",
+                "time": "2/21/2017 10:17",
+                "user_name": "erector",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "hello",
+                "time": "2/21/2017 10:23",
+                "user_name": "",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "eks dee",
+                "time": "2/21/2017 10:23",
+                "user_name": "feels pepe man ",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "monkey monkey monkey",
+                "time": "2/21/2017 10:22",
+                "user_name": "bonobo",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "wtf",
+                "time": "2/21/2017 10:23",
+                "user_name": "potatoes",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            },
+            {
+                "type": "text",
+                "msg": "hey man",
+                "time": "2/21/2017 10:18",
+                "user_name": "Anarchy",
+                "session": {
+                    "group": "global",
+                    "key": "meme_cats"
+                }
+            }
+        ],
+        "attachemnts": [],
+        "admin": "rolli",
+        "members": [
+            "andreGarvin",
+            "oozingboy",
+            "Drew Carey",
+            "SendHelp",
+            "drew_carey",
+            "erector",
+            "potatoes",
+            "7",
+            "kawaii boi xD",
+            "hahahahahahaha",
+            "drew carey",
+            "kawaii boi xDDD",
+            "Anarchy",
+            "hi",
+            "Boosted Monkey",
+            "qwerty",
+            "scholarly dropout ",
+            "triggered memes",
+            "bonobo",
+            "feels pepe man "
+        ],
+        "active_users": []
+    }
+    "rolli-bot": {
+        "name": "rolli-bot",
+        "admin": "rolli-bot",
+        "k": null,
+        "msgs": {},
+        "members": [
+            "andreGarvin"
+        ]
+},
+    "feedback": {
+        "len": 0,
+        "msgs": []
+    }
+}
