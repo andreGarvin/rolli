@@ -9,6 +9,7 @@ const app = new Vue({
         seen: true,      // the 'seen' variabelfor displaying things on the website
         groupbin: false, // displays the group settings panel
         resp: null,      // holds the resp from the backend webserver
+        create_url: 'my-projects-andregarvin.c9users.io/group',
         // displaying the cureent tima and date.
         curr_date: `${ date.getMonth() }/${ date.getDate() }/${ date.getFullYear() } ${ date.getHours() }:${ date.getMinutes() }`,
         gihpy: {
@@ -224,7 +225,7 @@ const app = new Vue({
                               };
 
                               const app = this;
-                              axios.post('http://localhost:3000/group', new_group)
+                              axios.post(this.create_url, new_group)
                                    .then( ( resp ) => {
 
                                          if ( resp.data.status === true )
