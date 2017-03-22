@@ -2,10 +2,9 @@
   "name": "rolli",
   "version": "1.0.0",
   "description": "Group chat app",
-  "main": "webserver.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node .",
-    "rolli": "nodemon ."
+    "start": "nodemon ."
   },
   "author": "andreGarvin",
   "license": "MIT",
@@ -13,6 +12,7 @@
     "body-parser": "^1.15.2",
     "express": "^4.14.1",
     "level": "^1.6.0",
+    "level-sublevel": "^6.6.1",
     "nodemon": "^1.11.0",
     "request": "^2.79.0",
     "socket.io": "^1.7.3"
