@@ -42,40 +42,7 @@ app.get('/', routes.index);
 
 
 // soket.io channels/sessions:
-io.on('connection', function( socket ) {
-    
-    const db = require('./lib/db.js');
-    
-    // decalring varibles useed in the nodejs webserver/sockets
-    const users = {};
-
-    // the 'join' channel/session
-    socket.on('join', function( msg ) {
-    
-        /*
-            once  user joins the channel save the user to the
-            'users'  object keeping track of the user on the chat rooms
-            or ative, but to see who logs off. displaying aand removing
-            people from certain list like 'active_users' array
-        */
-        
-        users[ msg.user_name ] = socket.id;
-        
-        db.get_groups( msg , function(err, resp) {
-            if (err) {
-                socket.emit( resp );
-                return;
-            }
-            
-            socket.emit('join', resp );
-        });
-    });
-
-
-    // socket.on('disconnect', );
-    // socket.on('global', channel.route_channels);
-
-});
+io.on('connection', channel.connection);
 
 
 // running th chat app

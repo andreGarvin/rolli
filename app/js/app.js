@@ -63,10 +63,7 @@ const app = new Vue({
                 emit a message to the sever to get the users
                 retriving all the groups the iuser is in
             */
-            this.socket.emit('join', { 
-                'user_name': user_name, 
-                groups: Object.keys( this.user.groups )
-            });
+            this.socket.emit('join', user_name);
     
             /*
                 waiting for the retirved groups the user is in from the backend
