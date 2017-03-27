@@ -36,7 +36,10 @@ const app = new Vue({
             user_name: '',   // 'user_name' of the user in the chat room
             
             // manging the chat channels the user is on
-            session: {},
+            session: {
+                group: 'global',
+                key: null
+            },
             whispers: {},
             groups: {}
         }
@@ -69,13 +72,13 @@ const app = new Vue({
                 waiting for the retirved groups the user is in from the backend
                 and assign the data to the user groups.
             */
-            this.socket.on('join', function( msg ) {
+            this.socket.on('join', function( resp ) {
                 
-                console.log( msg );
-                // // assiging the resp data to the users 'this.user.groups'
-                // this.user.groups = msg.groups;
+                // assiging the resp data to the users 'this.user.groups'
+                this.user.groups = resp.groups;
     
-                // // add new join message/notifcation to 'active_users' array
+                console.log( this.user.groups );
+                // add new join message/notifcation to 'active_users' array
                 // for ( var m in this.user.groups ) {
     
                 //     this.user.listedgroups.push( m );
