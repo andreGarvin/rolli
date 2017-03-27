@@ -1,6 +1,3 @@
-// file system module in core node modules
-var fs = require('fs');
-
 // express server module
 var express = require('express');
 var app = express();
@@ -36,7 +33,9 @@ app.use(express.static(`${__dirname}/app`));
 
 // rolli url paths:
 app.get('/', routes.index);
-// app.post('/group', routes.Creategroups);
+app.post('/group', routes.Creategroup);
+app.get('/search/:group_name', routes.search)
+
 // app.get('/feedback', routes.GET_feedback);
 // app.post('/feedback', routes.POST_feedback);
 
@@ -47,6 +46,5 @@ io.on('connection', channel.connection);
 
 // running th chat app
 rolli_server.listen( port, function() {
-
-    console.log(`listening on *: ${ port }`);
+    console.log(`listening on *: https://${ process.env.IP }:${ port }`);
 });

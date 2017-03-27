@@ -3,7 +3,7 @@ const level = require('level'),
 
 var es6 = require('./lib/includes.js');
 
-const db = sublevel( level('./db/rolli_db', { valueEncoding: 'json' }) );
+const db = level('./rolli_db', { valueEncoding: 'json' });
 
 
 // use this
@@ -43,16 +43,18 @@ var db_obj = {
                 admins: [ '@rolli' ]
             },
             msgs: [],
+            members: [],
             attachements: [],
             requests: []
         },
         rolli_bot: {
-            group_name: 'rolli-bot',
+            group_name: 'rolli_bot',
             gropup_db_obj: {
                 k: null,
                 admin: '@rolli-bot'
             },
             msgs: [],
+            members: [],
             attachements: [],
             requests: []
         }
