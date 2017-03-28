@@ -1,8 +1,1 @@
-# rolli
-## A simple group chat app for anyone to make simple group chats
-
-## techonglies used to make rolli
-### - Vue ( frontend )
-### - socket.io
-### - nodeJS ( backend )
-### - HTML & CSS
+# rolli: A simple multi group chat app to communicate freely amaongst many of your fellow friends.

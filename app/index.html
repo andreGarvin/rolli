@@ -20,21 +20,21 @@
                     
                     <button @click='createGroup' type="button" class="btn btn-success">add group</button>
                     <div v-for='group in user.listedgroups' class='col-md-12 col-xs-12'>
-                        <p @click='switchSessionChannel( group, user.groups[group].k )' class="group-tag text-center"> {{ group }} </p>
+                        <p @click='user.session.group = group' class="group-tag text-center"> {{ group }} </p>
                     </div>
                 </div>
 
                 <div class="row">
                 
-                    <div class="navbar navbar-default">
-                        <button @click='groupbin = !( groupbin )' type="button" class="btn btn-default pull-right">|||</button>
-                    </div>
+                    <!--<div class="navbar navbar-default">-->
+                    <!--    <button @click='groupbin = !( groupbin )' type="button" class="btn btn-default pull-right">|||</button>-->
+                    <!--</div>-->
                     
-                    <div v-if='groupbin' class="bin col-md-7 col-xs-7 col-md-offset-5 col-xs-offset-5">
-                        <button type="button" class="btn btn-default pull-right">mute this chat</button>
-                        <button type="button" class="btn btn-success pull-right">add</button>
-                        <button type="button" class="btn btn-danger pull-right">remove</button>
-                    </div>
+                    <!--<div v-if='groupbin' class="bin col-md-7 col-xs-7 col-md-offset-5 col-xs-offset-5">-->
+                    <!--    <button type="button" class="btn btn-default pull-right">mute this chat</button>-->
+                    <!--    <button type="button" class="btn btn-success pull-right">add</button>-->
+                    <!--    <button type="button" class="btn btn-danger pull-right">remove</button>-->
+                    <!--</div>-->
                 
                     
                     <!--screen of the chat room-->
@@ -88,11 +88,11 @@
                         </button>
                     
                         <!--the input box -->
-                        <input style='margin-bottom: 20px' type="text" class="form-control" v-model='gihpy.gif_query' placeholder='search' />
+                        <input style='margin-bottom: 20px' type="text" class="form-control" v-model='gif_query' placeholder='search' />
                     
                         <!--the gif display -->
                         <div class="gif-container">
-                            <img @click='send_gif( gif )' v-for='gif in gihpy.gifs' :src="gif" class='img-responsive img-rounded'/>
+                            <img @click='send_gif( gif )' v-for='gif in gihpy.gifs' :src="gif" class='gif img-responsive img-rounded'/>
                         </div>
                     
                     </div>
