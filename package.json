@@ -9,6 +9,7 @@
   "author": "andreGarvin",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.15.3",
     "body-parser": "^1.15.2",
     "express": "^4.14.1",
     "level": "^1.6.0",
