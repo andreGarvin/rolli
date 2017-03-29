@@ -40,6 +40,7 @@ const app = new Vue({
                 group: 'global',
                 key: null
             },
+            groups_len: 0,
             groups: {}
             // whispers: {},
         }
@@ -78,17 +79,7 @@ const app = new Vue({
                 this.user.groups = resp.groups;
     
                 this.user.listedgroups = Object.keys( this.user.groups );
-                
-                // add new join message/notifcation to 'active_users' array
-                // for ( var m in this.user.groups ) {
-    
-                //     this.user.listedgroups.push( m );
-    
-                //     if ( this.user.groups[m].active_users !== undefined ) {
-    
-                //         this.user.groups[m].active_users.push( msg.user_name );
-                //     }
-                // }
+                this.user.groups_len = Object.keys( this.user.groups ).length;
     
             }.bind(this));
             
@@ -96,9 +87,10 @@ const app = new Vue({
         
         searchForGroups: function( query ) {
             
-            if ( query !== '' || query.length !== 0 ) {
+            if ( query.replace(/^\s+|\s+$/g, '') !== '' || query.length !== 0 ) {
+                
                 axios.get('/search/' + query)
-                    .then(( resp ) => {
+                    .then(function( resp ) {
                         
                         console.log( resp.data );
                     });
@@ -149,39 +141,22 @@ const app = new Vue({
 
         // recving messages
         recv_msg: function() {
-    
+            
             // recv message from the channel/session the user in on
-            this.socket.on(this.user.session.group, function( msg ) {
-    
-                // finish whisper function
-                if ( msg.type === 'whisper' ) {
-    
-                    // var members = this.user.groups.global.members;
-                    // for ( var m in members ) {
-                    //
-                    //     console.log( members[m] );
-                    //     // if ( members[m].user_name === this.user.user_name )
-                    //     //     members[m].whisper.push( msg );
-                    //
-                    // }
-                    
+            this.socket.on('global', function( msg ) {
+                if ( msg.type === 'gif' || msg.type === 'src' || msg.type === 'url' ) {
+
+                    /*
+                        recv the message from bakend
+                        appends to the attchments
+                    */
+                    this.user.groups[this.user.session.group].attachments.push( msg );
                 }
-                else {
-    
-                    if ( msg.type === 'gif' || msg.type === 'src' || msg.type === 'url' ) {
-    
-                        /*
-                            recv the message from bakend
-                            appends to the attchments
-                        */
-                        this.user.groups[this.user.session.group].attachments.push( msg );
-                    }
-    
-                      // recv the message from bakend
-                      this.user.groups[this.user.session.group].msgs.push( msg );
-                }
-    
-             }.bind(this));
+
+                // recv the message from bakend
+                this.user.groups[this.user.session.group].msgs.push( msg );
+            
+            }.bind(this));
     
         },
 
@@ -210,10 +185,10 @@ const app = new Vue({
                           if ( giphy_resp.data[j].images.original.url !== undefined ) {
                         
                               //  append the results that are not undfined to the 'gihpy.gifs' array
-                              app.gihpy.gifs.push( giphy_resp.data[j].images.fixed_width_small.url );
+                              this.gihpy.gifs.push( giphy_resp.data[j].images.fixed_width_small.url );
                             }
                         }
-                    });
+                    }).bind(this);
             }
         },
 
@@ -228,30 +203,37 @@ const app = new Vue({
                 session: this.user.session
             });
 
-            this.user.groups[this.user.session.group].attachments.push({
-                type: 'gif', 
-                src: src,
-                time: this.curr_date,
-                user_name: this.user.user_name,
-                session: this.user.session
-            });
-
             this.gihpy.gifs = [];
             this.gif_query = '';
 
         },
-
+        
         createGroup: function() {
 
-            var groupName = prompt('group name:');
+            var groupName = prompt('group name:').replace(/^\s+|\s+$/g, '');
             var GroupExist = false;
+            
+            if ( groupName.length !== 0 && groupName !== '' ) {
+                
+                axios.post('/create_group/', { group_name: groupName, name: this.user.user_name })
+                    .then(function( resp ) {
+                        
+                        resp = resp.data;
+                        
+                        if ( resp.status.bool ) {
+                            
+                            console.log( resp.new_group );
+                            console.log( this.user.groups );
+                            // this.user.groups[resp.new_group.group_name] = resp.new_group;
+                            // this.user.group_len += 1;
+                            return;
+                        }
+                        
+                        console.log( resp.err_msg );
+                    }).bind(this);
+                
+            }
 
-            axios.get('/search/' + groupName)
-                .then(( resp ) => {
-                    resp = resp.data;
-                    
-                    console.log( resp );
-                });
         },
         
         // clears the window/screen of the chat space
@@ -273,13 +255,11 @@ const app = new Vue({
         gif_query: function() {
             
             if ( this.gif_query.length < 0 || this.gif_query.length !== 0 ) {
-
-                var app = this;
-
+                
                 axios.get('https://api.giphy.com/v1/gifs/search?q='+ app.gif_query + '&api_key=dc6zaTOxFJmzC')
                     .then(function( resp ) {
 
-                          app.gihpy.gifs = [];
+                         this.gihpy.gifs = [];
 
                           var giphy_resp = resp.data;
 
@@ -287,11 +267,11 @@ const app = new Vue({
 
                               if ( giphy_resp.data[j].images.original.url !== undefined ) {
 
-                                  app.gihpy.gifs.push( giphy_resp.data[j].images.fixed_width_small.url );
+                                  this.gihpy.gifs.push( giphy_resp.data[j].images.fixed_width_small.url );
                               }
                           }
 
-                    });
+                    }).bind(this);
             }
             else {
 

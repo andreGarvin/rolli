@@ -18,7 +18,6 @@ var io = require('socket.io')(rolli_server);
 
 
 // required 'lib' modules:
-var bot = require('./lib/bot.js');           // the rolli-bot code
 var routes = require('./lib/routes.js');     // routes for the server
 var channel = require('./lib/channels.js');  // socket channels for the socket.io
 
@@ -33,15 +32,16 @@ app.use(express.static(`${__dirname}/app`));
 
 // rolli url paths:
 app.get('/', routes.index);
-app.post('/group', routes.Creategroup);
+app.post('/create_group', routes.Creategroup);
 app.get('/search/:group_name', routes.search)
 
-// app.get('/feedback', routes.GET_feedback);
-// app.post('/feedback', routes.POST_feedback);
 
-
-// soket.io channels/sessions:
-io.on('connection', channel.connection);
+/*
+    soket.io channels/sessions module to 
+    create abstraction and keep logic out 
+    of the sever file:
+*/
+channel.connection( io );
 
 
 // running th chat app

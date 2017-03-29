@@ -38,46 +38,48 @@
                 
                     
                     <!--screen of the chat room-->
-                    <div class="screen col-md-9 col-xs-8 col-md-offset-3 col-xs-offset-4 container-fulid row">
-                    
-                        <!--<span v-for='msg in user.groups[user.session.group].msgs'>-->
+                    <div v-if='user.groups_len'class="screen col-md-9 col-xs-8 col-md-offset-3 col-xs-offset-4 container-fulid row">
                         
+                        <span v-for='msg in user.groups[user.session.group].msgs'>
+                            
                             <!--client sending message -->
-                            <!--<div v-if="msg.user_name === user.user_name" class="col-md-12 col-xs-12">-->
+                            <div v-if="msg.user_name === user.user_name" class="col-md-12 col-xs-12">
                         
-                            <!--    <ul class='pull-right'>-->
-                            <!--        <li v-if="msg.type === 'text' " class='msg lead' id='me'> {{ msg.msg }} </li>-->
-                            <!--        <li v-else="msg.type === 'gif' ">-->
-                            <!--            <img :src="msg.src" class='gif img-responsive img-rounded' />-->
-                            <!--        </li>-->
-                            <!--        <li v-for="m in user.groups[user.session.group].memder">-->
-                            <!--            <p v-if='m === user,user_name' v-for="msg in m.whisper">-->
-                            <!--                {{ msg.msg }}-->
-                            <!--                <small>{{ msg.time }}; @{{ msg.recp }}</small>-->
-                            <!--            </p>-->
-                            <!--        </li>-->
-                            <!--    </ul>-->
-                        
-                            <!--</div>-->
+                                <ul class='pull-right'>
+                                    <li v-if="msg.type === 'text' " class='msg lead' id='me'> {{ msg.msg }} </li>
+                                    <li v-else="msg.type === 'gif' ">
+                                        <img :src="msg.src" class='gif img-responsive img-rounded' />
+                                    </li>
+                                    <!--<li v-for="m in user.groups[user.session.group].memder">-->
+                                    <!--    <p v-if='m === user.user_name' v-for="msg in m.whisper">-->
+                                    <!--        {{ msg.msg }}-->
+                                    <!--        <small>{{ msg.time }}; @{{ msg.recp }}</small>-->
+                                    <!--    </p>-->
+                                    <!--</li>-->
+                                </ul>
+                                <div style='color: #999' class='col-md-12 col-xs-12'>
+                                    <p class='pull-right'>{{ msg.time  }}; @{{ msg.user_name }} </p>
+                                </div>
+                            </div>
                         
                         
                             <!--if the user is recving the message -->
-                            <!--<div v-else="msg.user_name !== user.user_name" class="col-md-12 col-xs-12">-->
+                            <div v-else="msg.user_name !== user.user_name" class="col-md-12 col-xs-12">
                     
-                            <!--    <ul class='pull-left'>-->
-                            <!--        <li v-if=" msg.type === 'text' " class='msg lead' id='other'> {{ msg.msg }} </li>-->
+                                <ul class='pull-left'>
+                                    <li v-if=" msg.type === 'text' " class='msg lead' id='other'> {{ msg.msg }} </li>
                     
-                            <!--        <li v-else=" msg.type === 'gif' ">-->
-                            <!--            <img :src="msg.src" class='gif img-responsive img-rounded' />-->
-                            <!--        </li>-->
-                            <!--    </ul>-->
-                            <!--    <div style='color: #999' class='col-md-12 col-xs-12'>-->
-                            <!--        <p class='pull-left'>{{ msg.time  }}; @{{ msg.user_name }} </p>-->
-                            <!--    </div>-->
+                                    <li v-else=" msg.type === 'gif' ">
+                                        <img :src="msg.src" class='gif img-responsive img-rounded' />
+                                    </li>
+                                </ul>
+                                <div style='color: #999' class='col-md-12 col-xs-12'>
+                                    <p class='pull-left'>{{ msg.time  }}; @{{ msg.user_name }} </p>
+                                </div>
                     
-                            <!--</div>-->
+                            </div>
                         
-                        <!--</span>-->
+                        </span>
                     </div>
                     
                     <!--the gif container -->
