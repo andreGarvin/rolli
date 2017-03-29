@@ -22,8 +22,10 @@ const app = new Vue({
         // holds the resp from the backend webserver
         resp: {},
         
+        group_results: [],
+        
         // displaying the cureent tima and date.
-        curr_date: date.getMonth() +'/'+ date.getDate() +'/'+ date.getFullYear() +' '+ date.getHours() +':'+ date.getMinutes(),
+        curr_date: date.getMonth() +'/'+ date.getDate() +'/'+ date.getFullYear() + ' ' + date.toLocaleTimeString(),
         
         gif_query: '',   // holds the value for the 'gihpy.gif_query'
         gihpy: {
@@ -87,13 +89,27 @@ const app = new Vue({
         
         searchForGroups: function( query ) {
             
-            if ( query.replace(/^\s+|\s+$/g, '') !== '' || query.length !== 0 ) {
+            if ( query.replace(/^\s+|\s+$/g, '') !== '' && query.length !== 0 ) {
+                
+                var app = this;
                 
                 axios.get('/search/' + query)
                     .then(function( resp ) {
+                        resp = resp.data;
                         
-                        console.log( resp.data );
+                        if ( resp.status.bool ) {
+                            
+                            app.group_results = resp.groups;
+                        }
+                        else {
+                            app.group_results = resp.err_msg;
+                        }
+                        
                     });
+            }
+            else {
+                this.group_results = [];
+                this.query = '';
             }
             
         },
@@ -102,7 +118,7 @@ const app = new Vue({
         send_msg: function() {
     
             // if the user 'this.msg' is not empty send it
-            if ( this.msg.length !== 0 ) {
+            if ( this.msg.length !== 0 && this.msg.replace(/^\s+|\s+$/g, '') !== '' && this.msg.length > 50 ) {
     
                 /*
                     however if the perosn sends a whisper
@@ -185,10 +201,10 @@ const app = new Vue({
                           if ( giphy_resp.data[j].images.original.url !== undefined ) {
                         
                               //  append the results that are not undfined to the 'gihpy.gifs' array
-                              this.gihpy.gifs.push( giphy_resp.data[j].images.fixed_width_small.url );
+                              app.gihpy.gifs.push( giphy_resp.data[j].images.fixed_width_small.url );
                             }
                         }
-                    }).bind(this);
+                    });
             }
         },
 
@@ -215,6 +231,8 @@ const app = new Vue({
             
             if ( groupName.length !== 0 && groupName !== '' ) {
                 
+                var app = this;
+                
                 axios.post('/create_group/', { group_name: groupName, name: this.user.user_name })
                     .then(function( resp ) {
                         
@@ -223,14 +241,14 @@ const app = new Vue({
                         if ( resp.status.bool ) {
                             
                             console.log( resp.new_group );
-                            console.log( this.user.groups );
+                            console.log( app.user.groups );
                             // this.user.groups[resp.new_group.group_name] = resp.new_group;
                             // this.user.group_len += 1;
                             return;
                         }
                         
                         console.log( resp.err_msg );
-                    }).bind(this);
+                    });
                 
             }
 
@@ -256,10 +274,12 @@ const app = new Vue({
             
             if ( this.gif_query.length < 0 || this.gif_query.length !== 0 ) {
                 
+                var app = this;
+                
                 axios.get('https://api.giphy.com/v1/gifs/search?q='+ app.gif_query + '&api_key=dc6zaTOxFJmzC')
                     .then(function( resp ) {
 
-                         this.gihpy.gifs = [];
+                         app.gihpy.gifs = [];
 
                           var giphy_resp = resp.data;
 
@@ -267,11 +287,11 @@ const app = new Vue({
 
                               if ( giphy_resp.data[j].images.original.url !== undefined ) {
 
-                                  this.gihpy.gifs.push( giphy_resp.data[j].images.fixed_width_small.url );
+                                  app.gihpy.gifs.push( giphy_resp.data[j].images.fixed_width_small.url );
                               }
                           }
 
-                    }).bind(this);
+                    });
             }
             else {
 
