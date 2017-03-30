@@ -27,15 +27,16 @@
                     
                     <!--<button @click='createGroup' type="button" class="btn btn-success">add group</button>-->
                     <div v-for='group in user.listedgroups' class='col-md-12 col-xs-12'>
-                        <p @click='user.session.group = group' class="group-tag text-center"> {{ group }} </p>
+                        <h3 @click='user.session.group = group' class="group-tag text-center"> {{ group }} </h3>
                     </div>
                 </div>
 
                 <div class="row">
                 
-                    <!--<div class="navbar navbar-default">-->
-                    <!--    <button @click='groupbin = !( groupbin )' type="button" class="btn btn-default pull-right">|||</button>-->
-                    <!--</div>-->
+                    <div class="navbar navbar-default">
+                        <h2 class='text-center'>{{ user.session.group }}</h2>
+                        <!--<button @click='groupbin = !( groupbin )' type="button" class="btn btn-default pull-right">|||</button>-->
+                    </div>
                     
                     <!--<div v-if='groupbin' class="bin col-md-7 col-xs-7 col-md-offset-5 col-xs-offset-5">-->
                     <!--    <button type="button" class="btn btn-default pull-right">mute this chat</button>-->
