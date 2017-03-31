@@ -102,15 +102,19 @@ const app = new Vue({
                             app.group_results = resp.groups;
                         }
                         else {
+                            
                             app.group_results = resp.err_msg;
+                            this.group_results = [];
+                            this.query = '';
                         }
                         
                     });
+                
+                return;
             }
-            else {
-                this.group_results = [];
-                this.query = '';
-            }
+            
+            this.group_results = [];
+            this.query = '';
             
         },
         
@@ -118,7 +122,7 @@ const app = new Vue({
         send_msg: function() {
     
             // if the user 'this.msg' is not empty send it
-            if ( this.msg.length !== 0 && this.msg.replace(/^\s+|\s+$/g, '') !== '' && this.msg.length > 50 ) {
+            if ( this.msg.length !== 0 && this.msg.replace(/^\s+|\s+$/g, '') !== '' ) {
     
                 /*
                     however if the perosn sends a whisper
@@ -159,7 +163,10 @@ const app = new Vue({
         recv_msg: function() {
             
             // recv message from the channel/session the user in on
-            this.socket.on('global', function( msg ) {
+            this.socket.on(this.user.session.group, function( msg ) {
+                
+                console.log( msg );
+                
                 if ( msg.type === 'gif' || msg.type === 'src' || msg.type === 'url' ) {
 
                     /*
