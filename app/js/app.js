@@ -99,7 +99,7 @@ const app = new Vue({
                         
                         if ( resp.status.bool ) {
                             
-                            app.group_results = resp.groups;
+                            app.group_results = resp.data;
                         }
                         else {
                             
@@ -258,6 +258,18 @@ const app = new Vue({
                 
             }
 
+        },
+        
+        get_group: function( group_name ) {
+            
+            var groups = [ group_name  ];
+            axios.get('/get-groups')
+                .the(function( resp ) {
+                    
+                    resp = resp.data;
+                    
+                    console.log( resp );
+                });
         },
         
         // clears the window/screen of the chat space
