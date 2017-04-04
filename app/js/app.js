@@ -161,12 +161,11 @@ const app = new Vue({
 
         // recving messages
         recv_msg: function() {
-            
             // recv message from the channel/session the user in on
             this.socket.on(this.user.session.group, function( msg ) {
                 
-                console.log( msg );
-                
+                console.log( this.user.session.group );
+                console.log( msg.msg );
                 if ( msg.type === 'gif' || msg.type === 'src' || msg.type === 'url' ) {
 
                     /*
@@ -240,7 +239,7 @@ const app = new Vue({
                 
                 var app = this;
                 
-                axios.post('/create_group/', { group_name: groupName, name: this.user.user_name })
+                axios.post('/create_group/', { group_name: groupName, user_name: this.user.user_name })
                     .then(function( resp ) {
                         
                         resp = resp.data;

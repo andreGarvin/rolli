@@ -18,6 +18,8 @@
                     <h1 class='col-md-2 col-xs-2'> Rolli </h1>
                     <input type="text" class="form-control" v-model='query' placeholder='search' />
                     
+                    <button @click='createGroup' class="btn btn-success btn-block">create group</button>
+                    
                     <div v-if='group_results.length !== 0' style='margin-top: 10px;' class='bin col-md-12 col-xs-12'>
                         <p v-if="typeof( group_results ) === 'string'">
                             {{ group_results }}
