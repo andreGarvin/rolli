@@ -36,6 +36,11 @@ html, body {
     margin-top: 10px;
 }
 
+#group:hover {
+    curosr: pointer,
+    background-color: #ddd
+}
+
 .screen {
     border-bottom: 1px solid #c7c1c1;
     background-color: #fff;
@@ -132,10 +137,10 @@ ul {
     padding: 10px;
     color: #fff;
 }
-#feedback {
-    margin-top: 50px;
-}
-#feedback .btn {
-    margin-top: 20px;
-    margin-left: 0px;
-}
+/*#feedback {*/
+/*    margin-top: 50px;*/
+/*}*/
+/*#feedback .btn {*/
+/*    margin-top: 20px;*/
+/*    margin-left: 0px;*/
+/*}*/

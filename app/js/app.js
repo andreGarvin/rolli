@@ -34,7 +34,6 @@ const app = new Vue({
         
         // the user info/settings
         user: {
-            listedgroups: [],    // listed groups the user is in
             user_name: '',   // 'user_name' of the user in the chat room
             
             // manging the chat channels the user is on
@@ -42,7 +41,6 @@ const app = new Vue({
                 group: 'global',
                 key: null
             },
-            groups_len: 0,
             groups: {}
             // whispers: {},
         }
@@ -80,7 +78,6 @@ const app = new Vue({
                 // assiging the resp data to the users 'this.user.groups'
                 this.user.groups = resp.groups;
     
-                this.user.listedgroups = Object.keys( this.user.groups );
                 this.user.groups_len = Object.keys( this.user.groups ).length;
     
             }.bind(this));
@@ -164,8 +161,6 @@ const app = new Vue({
             // recv message from the channel/session the user in on
             this.socket.on(this.user.session.group, function( msg ) {
                 
-                console.log( this.user.session.group );
-                console.log( msg.msg );
                 if ( msg.type === 'gif' || msg.type === 'src' || msg.type === 'url' ) {
 
                     /*
@@ -246,10 +241,8 @@ const app = new Vue({
                         
                         if ( resp.status.bool ) {
                             
-                            console.log( resp.new_group );
-                            console.log( app.user.groups );
-                            // this.user.groups[resp.new_group.group_name] = resp.new_group;
-                            // this.user.group_len += 1;
+                            app.user.groups[resp.new_group.group_name] = resp.new_group;
+                            
                             return;
                         }
                         
@@ -263,12 +256,20 @@ const app = new Vue({
         get_group: function( group_name ) {
             
             var groups = [ group_name  ];
-            axios.get('/get-groups')
-                .the(function( resp ) {
+            
+            var app = this;
+            axios.post('/get-groups', { groups: groups, user_name: this.user.user_name })
+                .then(function( resp ) {
                     
                     resp = resp.data;
                     
-                    console.log( resp );
+                    let groups = Object.keys( resp.groups );
+                    
+                    for ( var i in groups ) {
+                        app.user.groups[ groups[i] ] = resp.groups[ groups[i] ];
+                    }
+                    
+                    console.log( Object.keys( app.user.groups ) );
                 });
         },
         

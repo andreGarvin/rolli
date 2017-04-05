@@ -33,8 +33,8 @@ app.use(express.static(`${__dirname}/app`));
 // rolli url paths:
 app.get('/', routes.index);
 app.post('/create_group', routes.Creategroup);
-app.get('/search/:group_name', routes.search)
-
+app.get('/search/:group_name', routes.search);
+app.post('/get-groups', routes.get_groups);
 
 /*
     soket.io channels/sessions module to 

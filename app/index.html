@@ -24,11 +24,11 @@
                         <p v-if="typeof( group_results ) === 'string'">
                             {{ group_results }}
                         </p>
-                        <p v-else="typeof( group_results ) === 'object'" v-for='group in group_results'>{{ group }}</p>
+                        <p id='group' v-else="typeof( group_results ) === 'object'" v-for='group in group_results' @click='get_group( group )'>{{ group }}</p>
                     </div>
                     
                     <!--<button @click='createGroup' type="button" class="btn btn-success">add group</button>-->
-                    <div v-for='group in user.listedgroups' class='col-md-12 col-xs-12'>
+                    <div v-for='group in Object.keys( user.groups )' class='col-md-12 col-xs-12'>
                         <h3 @click='user.session.group = group' class="group-tag text-center"> {{ group }} </h3>
                     </div>
                 </div>
