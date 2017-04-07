@@ -121,60 +121,31 @@ const app = new Vue({
             // if the user 'this.msg' is not empty send it
             if ( this.msg.length !== 0 && this.msg.replace(/^\s+|\s+$/g, '') !== '' ) {
     
-                /*
-                    however if the perosn sends a whisper
-                    then do not print to the main stream
-                */
-                if ( this.msg.slice(0, 2) === 'w/' ) {
-    
-                    // emit to backend
-                    this.socket.emit(this.user.session.group, {
-                        type: 'whisper',
-                        recp: this.user.user_name,
-                        recv: this.msg.split(' ')[1].split(':')[0],
-                        msg: this.msg.split(' ').slice(2, this.msg.length).join(' '),
-                        time: this.curr_date,
-                        session: this.user.session
-                    });
-                    
-                }
-                else {
-    
-                    // else if it is a reggular message then print/append to the main stream
-                    this.socket.emit('global', {
-                        type: 'text',
-                        msg: this.msg,
-                        time: this.curr_date,
-                        user_name: this.user.user_name,
-                        session: this.user.session
-                    });
-                    
-                }
+                // else if it is a reggular message then print/append to the main stream
+                this.socket.emit('global', {
+                    type: 'text',
+                    msg: this.msg,
+                    time: this.curr_date,
+                    user_name: this.user.user_name,
+                    session: this.user.session
+                });
     
                 // empty the 'msg' data to a empty string
                 this.msg = '';
             }
         },
-
+        
         // recving messages
         recv_msg: function() {
+            
             // recv message from the channel/session the user in on
             this.socket.on(this.user.session.group, function( msg ) {
                 
-                if ( msg.type === 'gif' || msg.type === 'src' || msg.type === 'url' ) {
-
-                    /*
-                        recv the message from bakend
-                        appends to the attchments
-                    */
-                    this.user.groups[this.user.session.group].attachments.push( msg );
-                }
-
                 // recv the message from bakend
-                this.user.groups[this.user.session.group].msgs.push( msg );
-            
+                this.user.groups[msg.session.group].msgs.push( msg );
+                
             }.bind(this));
-    
+            
         },
 
         // loding gifs
@@ -258,19 +229,26 @@ const app = new Vue({
             var groups = [ group_name  ];
             
             var app = this;
-            axios.post('/get-groups', { groups: groups, user_name: this.user.user_name })
-                .then(function( resp ) {
+            axios.post('/get-groups', {
+                groups: groups, 
+                user_name: this.user.user_name
+            }).then( function( resp ) {
                     
                     resp = resp.data;
                     
-                    let groups = Object.keys( resp.groups );
+                    var groups = Object.keys( resp.groups );
                     
+                    var user_groups = app.user.groups;
                     for ( var i in groups ) {
-                        app.user.groups[ groups[i] ] = resp.groups[ groups[i] ];
+                        user_groups[ groups[i] ]= resp.groups[ groups[i] ];
                     }
                     
-                    console.log( Object.keys( app.user.groups ) );
+                    app.user.groups = user_groups;
+                    console.log( user_groups );
                 });
+            
+            this.group_results = [];
+            this.query = '';
         },
         
         // clears the window/screen of the chat space
@@ -326,3 +304,22 @@ const app = new Vue({
 app.connect();
 // recving message
 app.recv_msg();
+
+
+/*
+however if the perosn sends a whisper
+then do not print to the main stream
+*/
+// if ( this.msg.slice(0, 2) === 'w/' ) {
+
+//     // emit to backend
+//     this.socket.emit(this.user.session.group, {
+//         type: 'whisper',
+//         recp: this.user.user_name,
+//         recv: this.msg.split(' ')[1].split(':')[0],
+//         msg: this.msg.split(' ').slice(2, this.msg.length).join(' '),
+//         time: this.curr_date,
+//         session: this.user.session
+//     });
+
+// }
