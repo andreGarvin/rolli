@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Rolli</title>
         <link href="rolli.jpg" rel="icon" />
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" />
@@ -44,13 +46,6 @@
                         <!--<button @click='groupbin = !( groupbin )' type="button" class="btn btn-default pull-right">|||</button>-->
                     </div>
                     
-                    <!--<div v-if='groupbin' class="bin col-md-7 col-xs-7 col-md-offset-5 col-xs-offset-5">-->
-                    <!--    <button type="button" class="btn btn-default pull-right">mute this chat</button>-->
-                    <!--    <button type="button" class="btn btn-success pull-right">add</button>-->
-                    <!--    <button type="button" class="btn btn-danger pull-right">remove</button>-->
-                    <!--</div>-->
-                
-                    
                     <!--screen of the chat room-->
                     <div v-if='user.groups_len'class="screen col-md-9 col-xs-8 col-md-offset-3 col-xs-offset-4 container-fulid row">
                         
@@ -64,12 +59,12 @@
                                     <li v-else="msg.type === 'gif' ">
                                         <img :src="msg.src" class='gif img-responsive img-rounded' />
                                     </li>
-                                    <!--<li v-for="m in user.groups[user.session.group].memder">-->
-                                    <!--    <p v-if='m === user.user_name' v-for="msg in m.whisper">-->
-                                    <!--        {{ msg.msg }}-->
-                                    <!--        <small>{{ msg.time }}; @{{ msg.recp }}</small>-->
-                                    <!--    </p>-->
-                                    <!--</li>-->
+                                    <li v-for="m in user.groups[user.session.group].memder">
+                                        <p v-if='m === user.user_name' v-for="msg in m.whisper">
+                                            {{ msg.msg }}
+                                            <small>{{ msg.time }}; @{{ msg.recp }}</small>
+                                        </p>
+                                    </li>
                                 </ul>
                                 <div style='color: #999' class='col-md-12 col-xs-12'>
                                     <p class='pull-right'>{{ msg.time  }}; @{{ msg.user_name }} </p>
