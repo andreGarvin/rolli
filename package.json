@@ -1,0 +1,32 @@
+{
+  "name": "rolli",
+  "version": "1.0.0",
+  "description": "This is a multi group chat app built in firebase & Vue.js",
+  "main": "index.js",
+  "scripts": {
+    "build:prod": "webpack -p && cp app/index.html app/main.css app/rolli.jpg dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andreGarvin/rolli.git"
+  },
+  "author": "andreGarvin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/andreGarvin/rolli/issues"
+  },
+  "homepage": "https://github.com/andreGarvin/rolli#readme",
+  "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "css-loader": "^0.28.4",
+    "style-loader": "^0.18.1",
+    "webpack": "^2.6.1"
+  },
+  "dependencies": {
+    "axios": "^0.16.1",
+    "firebase": "^4.1.1"
+  }
+}

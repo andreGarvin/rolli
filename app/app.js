@@ -1,13 +1,71 @@
+import firebasedb from, { firebase } './js/firebase';
+
 const date = new Date;
 
 const app = new Vue({
     el: '#app', // selecting the target element on the html page
     data: {
-        
-        // the socket method/initilizing
-        socket: io(),
-        
-        // holds the value of 'msg'
+        ui_message: 'Hello, world',
+        msg: {
+            date: `${ date.getMonth() }/${ date.getDate()}/${ date.getFullYear() } ${ date.toLocaleTimeString()}`,
+            message: '',
+            user_name: '',
+            profile_pic: ''
+        }
+    },
+    methods: {
+        connect: function() {
+            
+            firebase.auth().onAuthStateChanged(firebaseUser => {
+                
+                if ( firebaseUser ) {
+                    
+                    firebaseUser = {
+                        email: firebaseUser.email,
+                        full_name: firebaseUser.displayName.toLowerCase(),
+                    };
+                    firebasedb.getUser(firebaseUser, (err, user_data) => {
+                        if (err) return console.log( err );
+                        
+                        console.log( user_data );
+                    })
+                }
+                else {
+                    
+                    window.open('auth.html', '_slef');
+                }
+            });
+        },
+        getUser: function() {
+            
+            var userObj = {
+                full_name: 'andre garvin',
+                date: `${ date.getMonth() }/${ date.getDate()}/${ date.getFullYear() } ${ date.toLocaleTimeString()}`,
+                user_name: 'andreGarvin',
+                email: 'andregarvin718@gmail.com'
+            };
+            firebasedb.getUser(userObj, (err, user_data) => {
+                if (err) {
+                    
+                    console.log(err);
+                    return
+                }
+                
+                console.log( user_data );
+            });
+        } 
+    }
+});
+
+// init the connection
+// app.connect();
+// recving message
+// app.recv_msg();
+
+
+/*
+
+// holds the value of 'msg'
         msg: '',
         
         // holds the value for 'query'
@@ -50,8 +108,8 @@ const app = new Vue({
         // connectimg to the webserver
         connect: function() {
     
-            /* setting the user name to nothing so the while
-               loop starts and to be assinged later */
+            setting the user name to nothing so the while
+               loop starts and to be assinged later
             var user_name = prompt('enter user name');
             
             // if the user does given in data keep prmpting for a username
@@ -63,16 +121,16 @@ const app = new Vue({
                // assign it to the 'this.user.user_name'
             this.user.user_name = user_name;
             
-            /*
+            
                 emit a message to the sever to get the users
                 retriving all the groups the iuser is in
-            */
+            
             this.socket.emit('join', user_name);
     
-            /*
+            
                 waiting for the retirved groups the user is in from the backend
                 and assign the data to the user groups.
-            */
+            
             this.socket.on('join', function( resp ) {
                 
                 // assiging the resp data to the users 'this.user.groups'
@@ -298,15 +356,6 @@ const app = new Vue({
 
         }
     }
-});
-
-// init the connection
-app.connect();
-// recving message
-app.recv_msg();
-
-
-/*
 however if the perosn sends a whisper
 then do not print to the main stream
 */
@@ -323,3 +372,152 @@ then do not print to the main stream
 //     });
 
 // }
+
+/*
+    const date = new Date;
+const app = new Vue({
+    el: '#app',
+    data: {
+        msg: '',
+        query: '',
+        resp: {},
+        
+    },
+    methods: {},
+    watch: {}
+});
+
+
+function random() {
+        
+        var names = [
+            'fizzy', 'popa', 'nut cracker', 
+            'table of doom',  'sexxy bear',
+            'winter sleeper', 'octocat', 
+            'breezie', 'teletubie', 'boo zeah',
+            'this old dog', 'salad pants'
+        ];
+        
+        return names[Math.floor(Math.random() * names.length)]
+    }
+    <div class="container-fluid">
+                
+                <!--sidebar -->
+                <div class="col-xs-4 col-md-3 sidebar-nav">
+                    <h1 class='col-md-2 col-xs-2'> Rolli </h1>
+                    <input type="text" class="form-control" v-model='query' placeholder='search' />
+                    
+                    <button @click='createGroup' class="btn btn-success btn-block">create group</button>
+                    
+                    <div v-if='group_results.length !== 0' style='margin-top: 10px;' class='bin col-md-12 col-xs-12'>
+                        <p v-if="typeof( group_results ) === 'string'">
+                            {{ group_results }}
+                        </p>
+                        <ul v-else="typeof( group_results ) === 'object'" v-for='group in group_results'>
+                            <li id='group' @click='get_group( group )'>
+                                {{ group }}
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!--<button @click='createGroup' type="button" class="btn btn-success">add group</button>-->
+                    <div v-for='group in Object.keys( user.groups )' class='col-md-12 col-xs-12'>
+                        <h3 @click='user.session.group = group' class="group-tag text-center"> {{ group }} </h3>
+                    </div>
+                </div>
+
+                <div class="row">
+                
+                    <div class="navbar navbar-default">
+                        <h2 class='text-center'>{{ user.session.group }}</h2>
+                        <!--<button @click='groupbin = !( groupbin )' type="button" class="btn btn-default pull-right">|||</button>-->
+                    </div>
+                    
+                    <!--screen of the chat room-->
+                    <div v-if='user.groups_len'class="screen col-md-9 col-xs-8 col-md-offset-3 col-xs-offset-4 container-fulid row">
+                        
+                        <span v-for='msg in user.groups[user.session.group].msgs'>
+                            
+                            <!--client sending message -->
+                            <div v-if="msg.user_name === user.user_name" class="col-md-12 col-xs-12">
+                        
+                                <ul class='pull-right'>
+                                    <li v-if="msg.type === 'text' " class='msg lead' id='me'> {{ msg.msg }} </li>
+                                    <li v-else="msg.type === 'gif' ">
+                                        <img :src="msg.src" class='gif img-responsive img-rounded' />
+                                    </li>
+                                    <li v-for="m in user.groups[user.session.group].memder">
+                                        <p v-if='m === user.user_name' v-for="msg in m.whisper">
+                                            {{ msg.msg }}
+                                            <small>{{ msg.time }}; @{{ msg.recp }}</small>
+                                        </p>
+                                    </li>
+                                </ul>
+                                <div style='color: #999' class='col-md-12 col-xs-12'>
+                                    <p class='pull-right'>{{ msg.time  }}; @{{ msg.user_name }} </p>
+                                </div>
+                            </div>
+                        
+                        
+                            <!--if the user is recving the message -->
+                            <div v-else="msg.user_name !== user.user_name" class="col-md-12 col-xs-12">
+                    
+                                <ul class='pull-left'>
+                                    <li v-if=" msg.type === 'text' " class='msg lead' id='other'> {{ msg.msg }} </li>
+                    
+                                    <li v-else=" msg.type === 'gif' ">
+                                        <img :src="msg.src" class='gif img-responsive img-rounded' />
+                                    </li>
+                                </ul>
+                                <div style='color: #999' class='col-md-12 col-xs-12'>
+                                    <p class='pull-left'>{{ msg.time  }}; @{{ msg.user_name }} </p>
+                                </div>
+                    
+                            </div>
+                        
+                        </span>
+                    </div>
+                    
+                    <!--the gif container -->
+                    <div v-if='gihpy.gifs.length !== 0' class="gif-bin col-xs-6 col-md-7 col-xs-offset-5 col-md-offset-4">
+                    
+                        <button @click='gihpy.gifs = []' type="button" class="close" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    
+                        <!--the input box -->
+                        <input style='margin-bottom: 20px' type="text" class="form-control" v-model='gif_query' placeholder='search' />
+                    
+                        <!--the gif display -->
+                        <div class="gif-container">
+                            <img @click='send_gif( gif )' v-for='gif in gihpy.gifs' :src="gif" class='gif img-responsive img-rounded'/>
+                        </div>
+                    
+                    </div>
+                    
+                    
+                    <!--the input box for sending messages -->
+                    <div class="input-box col-xs-8 col-md-9 col-xs-offset-4 col-md-offset-3 form-group form-group-lg row">
+                    
+                        <div class="col-md-9 col-xs-9">
+                        
+                            <!--input box -->
+                            <input @click='clearscreen'  type="text" class="form-control" id="formGroupInputLarge" v-model='msg' v-on:keyup.enter='send_msg' placeholder='message' />
+                        </div>
+                        
+                        <!--the buttons -->
+                        <div  class='options col-md-3 col-xs-3'>
+                            <button  @click='load_gifs' class="btn btn-success pull-right">Gifs</button>
+                        </div>
+                
+                </div>
+                
+                <!--end of the .row div-->
+                </div>
+
+            <!--end of .container-fluid div-->
+            </div>
+        
+        <!--end of the #app div-->
+        </div>
+*/
