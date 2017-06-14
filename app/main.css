@@ -37,7 +37,7 @@ html, body {
 }
 
 #group:hover {
-    curosr: pointer,
+    curosr: pointer;
     background-color: #ddd
 }
 
@@ -46,7 +46,7 @@ html, body {
     background-color: #fff;
     overflow-y: scroll;
     overflow-y: none;
-    height: 550px;
+    height: 582px;
 }
 
 .msg {

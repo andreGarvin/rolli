@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "axios": "^0.16.1",
-    "firebase": "^4.1.1"
+    "firebase": "^4.1.1",
+    "request": "^2.81.0"
   }
 }

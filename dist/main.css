@@ -37,7 +37,7 @@ html, body {
 }
 
 #group:hover {
-    curosr: pointer,
+    curosr: pointer;
     background-color: #ddd
 }
 

@@ -1,42 +1,235 @@
-import firebasedb from, { firebase } './js/firebase';
+import firebasedb , { firebase } from './js/firebase';
+import tool from './js/tools';
+import axios from 'axios';
+
+import './main.css';
 
 const date = new Date;
 
 const app = new Vue({
     el: '#app', // selecting the target element on the html page
     data: {
-        ui_message: 'Hello, world',
+        user_data: undefined,
+        groups: {},
+        session: 'global',
         msg: {
+            msg_id: '',
             date: `${ date.getMonth() }/${ date.getDate()}/${ date.getFullYear() } ${ date.toLocaleTimeString()}`,
+            type: '',
             message: '',
             user_name: '',
             profile_pic: ''
-        }
+        },
+        query: '',
+        giphy: {
+            gif_query: '',
+            gifs: []
+        },
+        ui_message: 'Hello, World!',
     },
     methods: {
         connect: function() {
             
-            firebase.auth().onAuthStateChanged(firebaseUser => {
+            var app = this;
+            let firebaseUser = {
+                user_name: 'andreGrvin',
+                email: 'andregarvin718@gmail.com',
+                full_name: 'andre garvin',
+            };
+            firebasedb.get_user(firebaseUser, (err, user_data) => {
+                if (err) return console.log( err );
                 
-                if ( firebaseUser ) {
+                app.user_data = user_data;
+                
+                let user_name = user_data.profile.user_name;
+                firebasedb.get_groups({ user_name: user_name, groups: user_data.groups }, (groups) => {
+                    if (groups.length) {
                     
-                    firebaseUser = {
-                        email: firebaseUser.email,
-                        full_name: firebaseUser.displayName.toLowerCase(),
-                    };
-                    firebasedb.getUser(firebaseUser, (err, user_data) => {
-                        if (err) return console.log( err );
-                        
-                        console.log( user_data );
-                    })
-                }
-                else {
+                        return console.log('No groups :(');
+                    }
                     
-                    window.open('auth.html', '_slef');
-                }
-            });
+                    app.groups = groups;
+                })
+            })
+            
+            /*
+                firebase.auth().onAuthStateChanged( (firebaseUser) => {
+                    if ( firebaseUser ) {}
+                    else {
+                        window.open('auth.html', '_slef');
+                    }
+                });
+            */
         },
-        getUser: function() {
+        // clears the window/screen of the chat space
+        clearscreen: function() {
+            
+            this.groupbin = false;
+            this.giphy.gifs = [];
+        },
+        send_msg: function() {
+            
+            // function isLink( input ) {
+
+            //     request(input, (err, resp, body) => {
+            //         if (err) {
+        
+            //             console.log(err);
+            //             return;
+            //         }
+                    
+            //         else if ( resp.statusCode === 200 ) {
+                        
+            //             return true;
+            //         }
+                    
+            //         return false;
+            //     })
+            // }
+            // function isImage( input ) {
+                
+            //     let ext = input.slice(input.length - 3, input.length);
+            //     if ( ext === 'jpg' || ext === 'png' ) {
+                    
+            //         if( isLink( input ) ) {
+                        
+            //             return true;
+            //         }
+                    
+            //         return false;
+            //     }
+                
+            //     return false;
+            // }
+            
+            // if ( isLink( this.msg.message ) ) {
+                    
+            //     this.msg.type = 'link';
+            //     firebasedb.saveTo(`groups/${ this.session }/messages`, this.msg).(this);
+            // }
+            // else if ( isImage( this.msg.message ) ) {
+                    
+            //     this.msg.type = 'image';
+            //     firebasedb.saveTo(`groups/${ this.session }/messages`, this.msg).(this);
+            // }
+            
+            this.msg.message = this.msg.message.replace(/^\s+|\s+$/g, '');
+            if ( this.msg.message.length !== 0 ) {
+                
+                this.msg.type = 'text';
+                this.msg.user_name = this.user_data.profile.user_name;
+                this.msg.msg_id = tool.hash();
+                
+                firebasedb.saveTo(`groups_db/${ this.session }/messages/${ this.groups[ this.session ].messages.length || 0 }`, this.msg, (err) => {
+                    if (err) {
+                        
+                        console.log( err );
+                        return;
+                    }
+                    
+                    var msgs = this.groups[ this.session ].messages;
+                    console.log( msgs );
+                    this.msg.message = '';
+                });
+            }
+        },
+        send_gif: function( src ) {
+            
+            this.msg.type = 'gif';
+            this.msg.message = src;
+            firebasedb.saveTo(`groups_db/${ this.session }/messages`, this.msg);
+            
+            this.gihpy.gif_query = '';
+            this.gihpy.gifs = [];
+        },
+        create_group: function() {
+            
+            const group_name = prompt('group name'),
+            group_obj = {
+                group_name: group_name,
+                admin: this.user_data.user_name,
+            };
+            firebasedb.create('group', group_obj, (err, new_group) => {
+                if (err) return console.log(err);
+                
+                let groups = this.groups;
+                groups.push( new_group );
+                
+                this.groups = groups;
+            })
+        },
+        load_gifs: function() {
+            
+            // set the 'gihpy.gif_query' to a empty string
+            this.giphy.gif_query = '';
+            // check if the 'gihpy.gif_query' does not equeal a empty string
+            if ( this.giphy.gifs.length === 0 ) {
+    
+                // decalare a app varibel that hldet the 'this' key word
+                var app = this;
+    
+                // make a GET request to the gihpy API
+                axios.get('https://api.giphy.com/v1/gifs/trending?api_key=dc6zaTOxFJmzC')
+                    .then(function( resp ) {
+                        // assign the 'resp.data' to variable
+                        var giphy_resp = resp.data;
+                        
+                        // iterate over the 'data' in the resp from gihpy API
+                        for ( var j in giphy_resp.data ) {
+                        
+                            // check if the 'src'/url does not equal a empty string or not avaible
+                            if ( giphy_resp.data[j].images.original.url !== undefined ) {
+                        
+                                //  append the results that are not undfined to the 'gihpy.gifs' array
+                                app.giphy.gifs.push( giphy_resp.data[j].images.fixed_width_small.url );
+                            }
+                        }
+                    })
+            }
+        }
+    },
+    watch: {
+        search: function() {
+            
+            firebasedb.search_db(this.query, (err, data) => {
+                if (err) return console.log(err);
+                
+                console.log( data );
+            })
+        },
+        search_for_gif: function() {
+            
+            var query = this.giphy.gif_query.replace(/^\s+|\s+$/g, '');
+            if ( query.length < 0 || query.length !== 0 ) {
+                
+                var app = this;
+                
+                axios.get('https://api.giphy.com/v1/gifs/search?q='+ query + '&api_key=dc6zaTOxFJmzC')
+                    .then(function( resp ) {
+                            app.gihpy.gifs = [];
+                            
+                            var giphy_resp = resp.data;
+                            for ( var j in giphy_resp.data ) {
+                                if ( giphy_resp.data[j].images.original.url !== undefined ) {
+                                    
+                                    app.giphy.gifs.push( giphy_resp.data[j].images.fixed_width_small.url );
+                                }
+                            }
+                    })
+            }
+            else {
+                
+                this.giphy.gifs = [];
+                this.load_gifs();
+            }
+        }
+    }
+});
+app.connect();
+
+/*
+
+getUser: function() {
             
             var userObj = {
                 full_name: 'andre garvin',
@@ -54,8 +247,8 @@ const app = new Vue({
                 console.log( user_data );
             });
         } 
-    }
-});
+
+*/
 
 // init the connection
 // app.connect();
@@ -327,32 +520,7 @@ const app = new Vue({
         // continous reloading and searching for gifs
         gif_query: function() {
             
-            if ( this.gif_query.length < 0 || this.gif_query.length !== 0 ) {
-                
-                var app = this;
-                
-                axios.get('https://api.giphy.com/v1/gifs/search?q='+ app.gif_query + '&api_key=dc6zaTOxFJmzC')
-                    .then(function( resp ) {
-
-                         app.gihpy.gifs = [];
-
-                          var giphy_resp = resp.data;
-
-                          for ( var j in giphy_resp.data ) {
-
-                              if ( giphy_resp.data[j].images.original.url !== undefined ) {
-
-                                  app.gihpy.gifs.push( giphy_resp.data[j].images.fixed_width_small.url );
-                              }
-                          }
-
-                    });
-            }
-            else {
-
-                this.gihpy.gifs = [];
-                this.load_gifs();
-            }
+            
 
         }
     }
@@ -400,124 +568,4 @@ function random() {
         
         return names[Math.floor(Math.random() * names.length)]
     }
-    <div class="container-fluid">
-                
-                <!--sidebar -->
-                <div class="col-xs-4 col-md-3 sidebar-nav">
-                    <h1 class='col-md-2 col-xs-2'> Rolli </h1>
-                    <input type="text" class="form-control" v-model='query' placeholder='search' />
-                    
-                    <button @click='createGroup' class="btn btn-success btn-block">create group</button>
-                    
-                    <div v-if='group_results.length !== 0' style='margin-top: 10px;' class='bin col-md-12 col-xs-12'>
-                        <p v-if="typeof( group_results ) === 'string'">
-                            {{ group_results }}
-                        </p>
-                        <ul v-else="typeof( group_results ) === 'object'" v-for='group in group_results'>
-                            <li id='group' @click='get_group( group )'>
-                                {{ group }}
-                            </li>
-                        </ul>
-                    </div>
-                    
-                    <!--<button @click='createGroup' type="button" class="btn btn-success">add group</button>-->
-                    <div v-for='group in Object.keys( user.groups )' class='col-md-12 col-xs-12'>
-                        <h3 @click='user.session.group = group' class="group-tag text-center"> {{ group }} </h3>
-                    </div>
-                </div>
-
-                <div class="row">
-                
-                    <div class="navbar navbar-default">
-                        <h2 class='text-center'>{{ user.session.group }}</h2>
-                        <!--<button @click='groupbin = !( groupbin )' type="button" class="btn btn-default pull-right">|||</button>-->
-                    </div>
-                    
-                    <!--screen of the chat room-->
-                    <div v-if='user.groups_len'class="screen col-md-9 col-xs-8 col-md-offset-3 col-xs-offset-4 container-fulid row">
-                        
-                        <span v-for='msg in user.groups[user.session.group].msgs'>
-                            
-                            <!--client sending message -->
-                            <div v-if="msg.user_name === user.user_name" class="col-md-12 col-xs-12">
-                        
-                                <ul class='pull-right'>
-                                    <li v-if="msg.type === 'text' " class='msg lead' id='me'> {{ msg.msg }} </li>
-                                    <li v-else="msg.type === 'gif' ">
-                                        <img :src="msg.src" class='gif img-responsive img-rounded' />
-                                    </li>
-                                    <li v-for="m in user.groups[user.session.group].memder">
-                                        <p v-if='m === user.user_name' v-for="msg in m.whisper">
-                                            {{ msg.msg }}
-                                            <small>{{ msg.time }}; @{{ msg.recp }}</small>
-                                        </p>
-                                    </li>
-                                </ul>
-                                <div style='color: #999' class='col-md-12 col-xs-12'>
-                                    <p class='pull-right'>{{ msg.time  }}; @{{ msg.user_name }} </p>
-                                </div>
-                            </div>
-                        
-                        
-                            <!--if the user is recving the message -->
-                            <div v-else="msg.user_name !== user.user_name" class="col-md-12 col-xs-12">
-                    
-                                <ul class='pull-left'>
-                                    <li v-if=" msg.type === 'text' " class='msg lead' id='other'> {{ msg.msg }} </li>
-                    
-                                    <li v-else=" msg.type === 'gif' ">
-                                        <img :src="msg.src" class='gif img-responsive img-rounded' />
-                                    </li>
-                                </ul>
-                                <div style='color: #999' class='col-md-12 col-xs-12'>
-                                    <p class='pull-left'>{{ msg.time  }}; @{{ msg.user_name }} </p>
-                                </div>
-                    
-                            </div>
-                        
-                        </span>
-                    </div>
-                    
-                    <!--the gif container -->
-                    <div v-if='gihpy.gifs.length !== 0' class="gif-bin col-xs-6 col-md-7 col-xs-offset-5 col-md-offset-4">
-                    
-                        <button @click='gihpy.gifs = []' type="button" class="close" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    
-                        <!--the input box -->
-                        <input style='margin-bottom: 20px' type="text" class="form-control" v-model='gif_query' placeholder='search' />
-                    
-                        <!--the gif display -->
-                        <div class="gif-container">
-                            <img @click='send_gif( gif )' v-for='gif in gihpy.gifs' :src="gif" class='gif img-responsive img-rounded'/>
-                        </div>
-                    
-                    </div>
-                    
-                    
-                    <!--the input box for sending messages -->
-                    <div class="input-box col-xs-8 col-md-9 col-xs-offset-4 col-md-offset-3 form-group form-group-lg row">
-                    
-                        <div class="col-md-9 col-xs-9">
-                        
-                            <!--input box -->
-                            <input @click='clearscreen'  type="text" class="form-control" id="formGroupInputLarge" v-model='msg' v-on:keyup.enter='send_msg' placeholder='message' />
-                        </div>
-                        
-                        <!--the buttons -->
-                        <div  class='options col-md-3 col-xs-3'>
-                            <button  @click='load_gifs' class="btn btn-success pull-right">Gifs</button>
-                        </div>
-                
-                </div>
-                
-                <!--end of the .row div-->
-                </div>
-
-            <!--end of .container-fluid div-->
-            </div>
-        
-        <!--end of the #app div-->
-        </div>
 */

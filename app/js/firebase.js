@@ -22,14 +22,14 @@ function create( type, obj, callback ) {
         case 'user':
             
             
-            firebase.database().ref('usersdb').on('value', ( users ) => {
+            firebase.database().ref('usersdb').on('value', ( u ) => {
                 
-                users = users.val();
+                u = u.val();
                 
-                if ( tool.includes(Object.keys( users ), obj.user_name) ) {
+                if ( tool.includes(Object.keys( u ), obj.user_name) ) {
                     
                     
-                    var x = tool.filter(users, (i) => {
+                    var x = tool.filter(u, (i) => {
                         
                         return i.uid === obj.uid;
                     })
@@ -100,11 +100,12 @@ function create( type, obj, callback ) {
         
         case 'group':
             
-            firebase.database().ref('groups_db').on('value', ( groups ) => {
+            // change to code to check if the group exist in the dbatabse first
+            firebase.database().ref('groups_db').on('value', (g) => {
                 
-                groups = Object.keys( groups );
+                g = Object.keys( g );
                 
-                if ( tool.includes(groups, obj.group_name) ) {
+                if ( tool.includes(g, obj.group_name) ) {
                 
                     obj = {
                         attachments: false,
@@ -112,7 +113,7 @@ function create( type, obj, callback ) {
                             admin: obj.user_name,
                             key: obj.key
                         },
-                        msgs: false
+                        messages: false
                     };
                     
                     // saving the use to the firebase database
@@ -150,14 +151,14 @@ function saveTo( db_path, input, callback ) {
         
         firebase.database().ref(db_path).set(input);
         
-        return callback(null, input);
+        return callback(null) || 0;
     }
     catch (e) {
         
         return callback({
             status: false,
             msg: e.message
-        }, undefined);
+        }) || 0;
     }
 }
 
@@ -170,9 +171,9 @@ function saveTo( db_path, input, callback ) {
 */
 function search_db( obj, callback ) {
     
-    firebase.database().ref('groups_db').on('value', (groups) => {
+    firebase.database().ref('groups_db').on('value', (g) => {
         
-        var x = tool.filter(Object.keys(groups), (j) => {
+        var x = tool.filter(Object.keys(g), (j) => {
             
             return j === obj.query;
         })
@@ -197,33 +198,63 @@ function search_db( obj, callback ) {
 }
 
 // get the user information once the user is signed in
-function getUser( userObj, callback ) {
+function get_user( userObj, callback ) {
 
     const usersdb = firebase.database().ref('usersdb');
     usersdb.on('value', (u) => {
         
-        var users = u.val();
-        
-        console.log( users );
-        // users.map
-        // if ( tool.includes(, userObj.full_name) ) {
+        var users = tool.map(tool.ObjectValues( u.val() ), ( i ) => {
             
-        //     return callback(null, users[ userObj.user_name ]);
-        // }
+            return i.email;
+        });
         
-        // return callback({
-        //     status: false,
-        //     msg: 'createss'
-        // }, undefined);
+        if ( tool.includes(users, userObj.email) ) {
+            
+            
+            return callback(null, u.val()[ userObj.user_name ]);
+        }
+        
+        return callback({
+            status: false,
+            msg: 'create_user'
+        }, undefined);
     });
+}
+
+function get_groups( obj, callback ) {
+    
+    firebase.database().ref('groups_db').on('value', (g) => {
+        
+        const groups = g.val();
+        
+        var group_arr = {};
+        var x = tool.filter(Object.keys( groups ), (g_arr) => {
+            
+            var g_members = groups[g_arr].db_obj.members;
+            return (
+                tool.includes( obj.groups, g_arr )
+                &&
+                tool.includes( tool.ObjectValues( g_members ), obj.user_name )
+            );
+        })
+        
+        
+        for ( var s in x ) {
+            
+            group_arr[ x[s] ] = groups[ x[s] ];
+        }
+        
+        return callback( group_arr );
+    })
 }
 
 export default {
     firebase: firebase,
     saveTo: saveTo,
     search_db: search_db,
-    getUser: getUser,
-    create: create
+    get_user: get_user,
+    create: create,
+    get_groups: get_groups
 }
 
 /*

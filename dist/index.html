@@ -10,27 +10,130 @@
         
         <!-- bootstrap css cdn -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" />
-        
-        <!-- my css style sheet -->
-        <link rel="stylesheet" href="main.css" type="text/css" />
     </head>
     <body>
-
-        <!-- Group chat app -->
+        
         <div id="app">
-            <h2>{{ ui_message }}</h2>
-            <button @click='getUser' class="btn btn-default">click me !</button>
+            
+            <div class="container-fluid">
+                
+                <!--sidebar -->
+                <div class="col-xs-4 col-md-3 sidebar-nav row">
+                    <h1 class='col-md-2 col-xs-2'> Rolli </h1>
+                    <input type="text" class="form-control" v-model='query' placeholder='search' />
+                    
+                    <!--<button @click='createGroup' class="btn btn-success btn-block">create group</button>-->
+                    
+                    <!--<div v-if='group_results.length !== 0' style='margin-top: 10px;' class='bin col-md-12 col-xs-12'>-->
+                    <!--    <p v-if="typeof( group_results ) === 'string'">-->
+                    <!--        {{ group_results }}-->
+                    <!--    </p>-->
+                    <!--    <ul v-else="typeof( group_results ) === 'object'" v-for='group in group_results'>-->
+                    <!--        <li id='group' @click='get_group( group )'>-->
+                    <!--            {{ group }}-->
+                    <!--        </li>-->
+                    <!--    </ul>-->
+                    <!--</div>-->
+                    
+                    <!--<button @click='createGroup' type="button" class="btn btn-success">add group</button>-->
+                    <!--<div v-for='group in Object.keys( user.groups )' class='col-md-12 col-xs-12'>-->
+                    <!--    <h3 @click='user.session.group = group' class="group-tag text-center"> {{ group }} </h3>-->
+                    <!--</div>-->
+                </div>
+
+                <div class="row">
+                    
+                    <!--screen of the chat room-->
+                    <div class="screen col-xs-8 col-sm-8 col-md-9 col-xs-offset-4 col-md-offset-3 container-fulid row">
+                        
+                        <!--<span v-for='msg in user.groups[user.session.group].msgs'>-->
+                            
+                            <!--client sending message -->
+                        <!--    <div v-if="msg.user_name === user.user_name" class="col-md-12 col-xs-12">-->
+                        
+                        <!--        <ul class='pull-right'>-->
+                        <!--            <li v-if="msg.type === 'text' " class='msg lead' id='me'> {{ msg.msg }} </li>-->
+                        <!--            <li v-else="msg.type === 'gif' ">-->
+                        <!--                <img :src="msg.src" class='gif img-responsive img-rounded' />-->
+                        <!--            </li>-->
+                        <!--            <li v-for="m in user.groups[user.session.group].memder">-->
+                        <!--                <p v-if='m === user.user_name' v-for="msg in m.whisper">-->
+                        <!--                    {{ msg.msg }}-->
+                        <!--                    <small>{{ msg.time }}; @{{ msg.recp }}</small>-->
+                        <!--                </p>-->
+                        <!--            </li>-->
+                        <!--        </ul>-->
+                        <!--        <div style='color: #999' class='col-md-12 col-xs-12'>-->
+                        <!--            <p class='pull-right'>{{ msg.time  }}; @{{ msg.user_name }} </p>-->
+                        <!--        </div>-->
+                        <!--    </div>-->
+                        
+                        
+                            <!--if the user is recving the message -->
+                        <!--    <div v-else="msg.user_name !== user.user_name" class="col-md-12 col-xs-12">-->
+                    
+                        <!--        <ul class='pull-left'>-->
+                        <!--            <li v-if=" msg.type === 'text' " class='msg lead' id='other'> {{ msg.msg }} </li>-->
+                    
+                        <!--            <li v-else=" msg.type === 'gif' ">-->
+                        <!--                <img :src="msg.src" class='gif img-responsive img-rounded' />-->
+                        <!--            </li>-->
+                        <!--        </ul>-->
+                        <!--        <div style='color: #999' class='col-md-12 col-xs-12'>-->
+                        <!--            <p class='pull-left'>{{ msg.time  }}; @{{ msg.user_name }} </p>-->
+                        <!--        </div>-->
+                    
+                        <!--    </div>-->
+                        
+                        <!--</span>-->
+                    </div>
+                    
+                    <!--the gif container -->
+                    <div v-if='giphy.gifs.length !== 0' class="gif-bin col-xs-6 col-md-7 col-xs-offset-5 col-md-offset-4">
+                    
+                        <button @click='giphy.gifs = []' type="button" class="close" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    
+                        <!--the input box -->
+                        <input style='margin-bottom: 20px' type="text" class="form-control" v-model='gif_query' placeholder='search' />
+                    
+                        <!--the gif display -->
+                        <div class="gif-container">
+                            <img @click='send_gif( gif )' v-for='gif in giphy.gifs' :src="gif" class='gif img-responsive img-rounded'/>
+                        </div>
+                    
+                    </div>
+                    
+                    
+                    <!--the input box for sending messages -->
+                    <div class="input-box col-xs-8 col-sm-8 col-md-9 col-xs-offset-4 col-md-offset-3 form-group form-group-lg row">
+                    
+                        <!-- input box -->
+                        <div class="col-md-9 col-xs-9">
+                            <input @click='clearscreen'  type="text" class="form-control" id="formGroupInputLarge" v-model='msg.message' v-on:keyup.enter='send_msg' placeholder='message' />
+                        </div>
+                        
+                        <!--the buttons -->
+                        <div  class='options col-md-3 col-xs-3'>
+                            <button  @click='load_gifs' class="btn btn-success pull-right">Gifs</button>
+                        </div>
+                
+                    </div>
+                
+                    <!-- end of the .row div -->
+                </div>
+
+                <!--end of .container-fluid div-->
+            </div>
+        
+        <!--end of the #app div-->
         </div>
 
         
-        <!-- firebase cdn -->
-        <script src="https://www.gstatic.com/firebasejs/4.1.1/firebase.js"></script>
         
         <!-- Vuejs cdn -->
         <script src='https://unpkg.com/vue/dist/vue.js'></script>
-        
-        <!-- axios cdn -->
-        <script src="https://unpkg.com/axios@0.12.0/dist/axios.min.js"></script>
         
         <!-- loadash cdn -->
         <script type="text/javascript" src="https://unpkg.com/lodash@4.13.1/lodash.min.js"></script>
