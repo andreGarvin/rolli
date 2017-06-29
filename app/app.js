@@ -25,7 +25,7 @@ const app = new Vue({
             gif_query: '',
             gifs: []
         },
-        ui_message: 'Hello, World!',
+        ui_message: '',
     },
     methods: {
         connect: function() {
@@ -69,41 +69,16 @@ const app = new Vue({
         },
         send_msg: function() {
             
-            // function isLink( input ) {
-
-            //     request(input, (err, resp, body) => {
-            //         if (err) {
-        
-            //             console.log(err);
-            //             return;
-            //         }
-                    
-            //         else if ( resp.statusCode === 200 ) {
-                        
-            //             return true;
-            //         }
-                    
-            //         return false;
-            //     })
-            // }
-            // function isImage( input ) {
-                
-            //     let ext = input.slice(input.length - 3, input.length);
+            // function checkType( input ) {
+            // let ext = input.slice(input.length - 3, input.length);
             //     if ( ext === 'jpg' || ext === 'png' ) {
-                    
             //         if( isLink( input ) ) {
-                        
             //             return true;
             //         }
-                    
             //         return false;
             //     }
-                
             //     return false;
-            // }
-            
-            // if ( isLink( this.msg.message ) ) {
-                    
+            // if ( isLink( this.msg.message ) ) { 
             //     this.msg.type = 'link';
             //     firebasedb.saveTo(`groups/${ this.session }/messages`, this.msg).(this);
             // }
@@ -112,23 +87,25 @@ const app = new Vue({
             //     this.msg.type = 'image';
             //     firebasedb.saveTo(`groups/${ this.session }/messages`, this.msg).(this);
             // }
+            // }
             
             this.msg.message = this.msg.message.replace(/^\s+|\s+$/g, '');
             if ( this.msg.message.length !== 0 ) {
+                
                 
                 this.msg.type = 'text';
                 this.msg.user_name = this.user_data.profile.user_name;
                 this.msg.msg_id = tool.hash();
                 
-                firebasedb.saveTo(`groups_db/${ this.session }/messages/${ this.groups[ this.session ].messages.length || 0 }`, this.msg, (err) => {
+                let group_mgs_len = this.groups[ this.session ].messages.length;
+                firebasedb.saveTo(`groups_db/${ this.session }/messages/${ group_mgs_len || 0 }`, this.msg, (err) => {
                     if (err) {
                         
                         console.log( err );
                         return;
                     }
                     
-                    var msgs = this.groups[ this.session ].messages;
-                    console.log( msgs );
+                    // this.groups[ this.session ].messages = this.groups[ this.session ].messages;
                     this.msg.message = '';
                 });
             }
@@ -137,7 +114,7 @@ const app = new Vue({
             
             this.msg.type = 'gif';
             this.msg.message = src;
-            firebasedb.saveTo(`groups_db/${ this.session }/messages`, this.msg);
+            firebasedb.saveTo(`groups_db/${ this.session }/messages/${ this.groups[ this.session ].messages.length || 0 }`, this.msg);
             
             this.gihpy.gif_query = '';
             this.gihpy.gifs = [];
@@ -162,6 +139,7 @@ const app = new Vue({
             
             // set the 'gihpy.gif_query' to a empty string
             this.giphy.gif_query = '';
+            
             // check if the 'gihpy.gif_query' does not equeal a empty string
             if ( this.giphy.gifs.length === 0 ) {
     
@@ -204,7 +182,7 @@ const app = new Vue({
                 
                 var app = this;
                 
-                axios.get('https://api.giphy.com/v1/gifs/search?q='+ query + '&api_key=dc6zaTOxFJmzC')
+                axios.get(`https://api.giphy.com/v1/gifs/search?q=${ query }&api_key=dc6zaTOxFJmzC`)
                     .then(function( resp ) {
                             app.gihpy.gifs = [];
                             

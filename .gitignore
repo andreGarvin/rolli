@@ -1,2 +1,4 @@
 /.arc
 /.bot
+/dist
+/node_modules
