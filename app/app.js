@@ -1,6 +1,8 @@
-import firebasedb , { firebase } from './js/firebase';
+import firebasedb, { firebase } from './js/firebase';
 import tool from './js/tools';
 import axios from 'axios';
+
+import VueComponent from './js/VueComponents';
 
 import './main.css';
 
@@ -9,8 +11,24 @@ const date = new Date;
 const app = new Vue({
     el: '#app', // selecting the target element on the html page
     data: {
-        user_data: undefined,
-        groups: {},
+        user_data: {
+            profile: {
+                profile_pic: "https://ca.slack-edge.com/T0K0A1PFC-U1P37RNJK-8f7c680c8cd8-1024",
+                user_name: 'andreGarvin'
+            }
+        },
+        groups: {
+            global: {
+                messages: {
+                    0: {
+                        type: 'text',
+                        message: 'Hello, world',
+                        user_name: 'andreGarvin',
+                        date: '7/8/2017 2:55pm'
+                    }
+                }
+            }
+        },
         session: 'global',
         msg: {
             msg_id: '',
@@ -21,73 +39,103 @@ const app = new Vue({
             profile_pic: ''
         },
         query: '',
-        giphy: {
-            gif_query: '',
-            gifs: []
+        atch_query: '',
+        load: {
+            load_type: '',
+            load_arr: []
         },
         ui_message: '',
+    },
+    components: {
+        message: VueComponent.message,
+        profilecontainer: VueComponent.profilecontainer
     },
     methods: {
         connect: function() {
             
-            var app = this;
-            let firebaseUser = {
-                user_name: 'andreGrvin',
-                email: 'andregarvin718@gmail.com',
-                full_name: 'andre garvin',
-            };
-            firebasedb.get_user(firebaseUser, (err, user_data) => {
-                if (err) return console.log( err );
-                
-                app.user_data = user_data;
-                
-                let user_name = user_data.profile.user_name;
-                firebasedb.get_groups({ user_name: user_name, groups: user_data.groups }, (groups) => {
-                    if (groups.length) {
+            // firebase.auth().onAuthStateChanged( user => {
+            //     if ( user ) {
                     
-                        return console.log('No groups :(');
-                    }
+            //         console.log( user );
+            //     }
+            //     else {
                     
-                    app.groups = groups;
-                })
-            })
+            //         console.log('NOT LOGGED IN :(');
+            //     }
+            // });
+            // var app = this;
             
-            /*
-                firebase.auth().onAuthStateChanged( (firebaseUser) => {
-                    if ( firebaseUser ) {}
-                    else {
-                        window.open('auth.html', '_slef');
-                    }
-                });
-            */
+            // let firebaseUser = {
+            //     user_name: '',
+            //     email: 'jhondoe@gmail.com',
+            //     full_name: 'jhon doe',
+            // };
+            // firebasedb.get_user(firebaseUser, (err, user_data) => {
+            //     if (err) {
+                    
+            //         firebasedb.create('user', err.userObj, (err, userObj ) => {
+            //             if (err) {
+                            
+            //                 console.log( err )
+            //                 return;
+            //             }
+                        
+            //             console.log( userObj );
+            //             // this.connect()
+            //         });
+            //         return;
+            //     }
+                
+            //     console.log( user_data );
+                
+            //     // if (err) {
+            //     //     firebasedb.create('user', firebaseUser);
+            //     //     this.connect();
+            //     // }
+            //     // app.user_data = user_data;
+                
+            //     // let user_name = user_data.profile.user_name;
+            //     // firebasedb.get_groups({ user_name: user_name, groups: user_data.groups }, (groups) => {
+            //     //     if (groups.length) {
+                    
+            //     //         return console.log('No groups :(');
+            //     //     }
+                    
+            //     //     app.groups = groups;
+            //     // })
+            // })
         },
         // clears the window/screen of the chat space
         clearscreen: function() {
             
-            this.groupbin = false;
-            this.giphy.gifs = [];
+            this.load.load_arr = [];
+        },
+        _send: function( type, src ) {
+            
+            this._query = '';
+            this.load.load_arr = [];
+            
+            this.msg.type = type;
+            this.msg.message = src;
+            firebasedb.saveTo(`groups_db/${ this.session }/messages/${ this.groups[ this.session ].messages.length || 0 }`, this.msg);
+        },
+        create_group: function() {
+            
+            const group_name = prompt('group name'),
+            group_obj = {
+                group_name: group_name,
+                admin: this.user_data.user_name,
+            };
+            firebasedb.create('group', group_obj, (err, new_group) => {
+                if (err) return console.log(err);
+                
+                let groups = this.groups;
+                groups.push( new_group );
+                
+                this.groups = groups;
+            })
         },
         send_msg: function() {
-            
-            // function checkType( input ) {
-            // let ext = input.slice(input.length - 3, input.length);
-            //     if ( ext === 'jpg' || ext === 'png' ) {
-            //         if( isLink( input ) ) {
-            //             return true;
-            //         }
-            //         return false;
-            //     }
-            //     return false;
-            // if ( isLink( this.msg.message ) ) { 
-            //     this.msg.type = 'link';
-            //     firebasedb.saveTo(`groups/${ this.session }/messages`, this.msg).(this);
-            // }
-            // else if ( isImage( this.msg.message ) ) {
-                    
-            //     this.msg.type = 'image';
-            //     firebasedb.saveTo(`groups/${ this.session }/messages`, this.msg).(this);
-            // }
-            // }
             
             this.msg.message = this.msg.message.replace(/^\s+|\s+$/g, '');
             if ( this.msg.message.length !== 0 ) {
@@ -110,103 +158,166 @@ const app = new Vue({
                 });
             }
         },
-        send_gif: function( src ) {
+        atch_load: function( type ) {
             
-            this.msg.type = 'gif';
-            this.msg.message = src;
-            firebasedb.saveTo(`groups_db/${ this.session }/messages/${ this.groups[ this.session ].messages.length || 0 }`, this.msg);
+            // set the '_query' to a empty string
+            this.atch_query = '';
+            this.load.load_arr = [];
+            this.load.load_type = type;
             
-            this.gihpy.gif_query = '';
-            this.gihpy.gifs = [];
-        },
-        create_group: function() {
-            
-            const group_name = prompt('group name'),
-            group_obj = {
-                group_name: group_name,
-                admin: this.user_data.user_name,
-            };
-            firebasedb.create('group', group_obj, (err, new_group) => {
-                if (err) return console.log(err);
+            // check if the '_query' does not equal a empty string
+            if ( this.load.load_arr.length === 0 ) {
                 
-                let groups = this.groups;
-                groups.push( new_group );
-                
-                this.groups = groups;
-            })
-        },
-        load_gifs: function() {
-            
-            // set the 'gihpy.gif_query' to a empty string
-            this.giphy.gif_query = '';
-            
-            // check if the 'gihpy.gif_query' does not equeal a empty string
-            if ( this.giphy.gifs.length === 0 ) {
-    
-                // decalare a app varibel that hldet the 'this' key word
+                // refernce to te vue this object
                 var app = this;
-    
-                // make a GET request to the gihpy API
-                axios.get('https://api.giphy.com/v1/gifs/trending?api_key=dc6zaTOxFJmzC')
-                    .then(function( resp ) {
-                        // assign the 'resp.data' to variable
-                        var giphy_resp = resp.data;
+                
+                switch ( type ) {
+                    
+                    case 'emojis':
+                        this.load.load_arr = [
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/grinning.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/grimacing.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/grin.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/smiley.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/smile.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/sweat_smile.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/laughing.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/innocent.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/wink.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/relieved.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/relaxed.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/triumph.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/unamused.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/sunglasses.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/neutral_face.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/blush.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/joy.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/cry.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/new_moon_with_face.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/full_moon_with_face.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/frog.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/-1.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/+1.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/b.png?v5',
+                            'https://github.global.ssl.fastly.net/images/icons/emoji/100.png?v5'
+                        ];
+                        break;
+                    case 'gifs':
                         
-                        // iterate over the 'data' in the resp from gihpy API
-                        for ( var j in giphy_resp.data ) {
+                        // make a GET request to the gihpy API
+                        axios.get('https://api.giphy.com/v1/gifs/trending?api_key=dc6zaTOxFJmzC')
+                            .then(function( resp ) {
+                                // assign the 'resp.data' to variable
+                                var giphy_resp = resp.data;
                         
-                            // check if the 'src'/url does not equal a empty string or not avaible
-                            if ( giphy_resp.data[j].images.original.url !== undefined ) {
+                                // iterate over the 'data' in the resp from gihpy API
+                                for ( var j in giphy_resp.data ) {
                         
-                                //  append the results that are not undfined to the 'gihpy.gifs' array
-                                app.giphy.gifs.push( giphy_resp.data[j].images.fixed_width_small.url );
-                            }
-                        }
-                    })
+                                    // check if the 'src'/url does not equal a empty string or not avaible
+                                    if ( giphy_resp.data[j].images.original.url !== undefined ) {
+                        
+                                        //  append the results that are not undfined to the 'gihpy.gifs' array
+                                        app.load.load_arr.push( giphy_resp.data[j].images.fixed_width_small.url );
+                                    }
+                                }
+                            })
+                        break;
+                    case 'memes':
+                        
+                        axios.get('https://dankexpress.herokuapp.com/')
+                            .then( (resp) => {
+                                resp = resp.data;
+                                console.log( !resp.status.bool )
+                                if ( !resp.status.bool ) {
+                                        
+                                    console.log( resp.msg )
+                                    return;
+                                }
+                                    
+                                resp = resp.resp;
+                                app.load.load_arr = resp.map(( i ) => {
+                                        
+                                    return i.src
+                                })
+                            })
+                        break;
+                }
             }
         }
     },
     watch: {
-        search: function() {
+        query: function() {
             
-            firebasedb.search_db(this.query, (err, data) => {
-                if (err) return console.log(err);
+            var query = this.query.replace(/^\s+|\s+$/g, '');
+            if ( query.length !== 0 ) {
                 
-                console.log( data );
-            })
+                firebasedb.search_db({ query: query }, (err, data) => {
+                    if (err) return console.log(err);
+                
+                    console.log( data );
+                })
+            }
         },
-        search_for_gif: function() {
+        atch_query: function() {
             
-            var query = this.giphy.gif_query.replace(/^\s+|\s+$/g, '');
+            var query = this.atch_query.replace(/^\s+|\s+$/g, '');
             if ( query.length < 0 || query.length !== 0 ) {
                 
                 var app = this;
+                switch ( app.load.load_type ) {
                 
-                axios.get(`https://api.giphy.com/v1/gifs/search?q=${ query }&api_key=dc6zaTOxFJmzC`)
-                    .then(function( resp ) {
-                            app.gihpy.gifs = [];
+                    case 'gifs':
+                        
+                        axios.get(`https://api.giphy.com/v1/gifs/search?q=${ query }&api_key=dc6zaTOxFJmzC`)
+                            .then(function( resp ) {
+                                app.load.load_arr = [];
                             
-                            var giphy_resp = resp.data;
-                            for ( var j in giphy_resp.data ) {
-                                if ( giphy_resp.data[j].images.original.url !== undefined ) {
+                                var giphy_resp = resp.data;
+                                for ( var j in giphy_resp.data ) {
+                                
+                                    if ( giphy_resp.data[j].images.original.url !== undefined ) {
                                     
-                                    app.giphy.gifs.push( giphy_resp.data[j].images.fixed_width_small.url );
+                                        app.load.load_arr.push( giphy_resp.data[j].images.fixed_width_small.url );
+                                    }
                                 }
-                            }
-                    })
+                        })
+                        break;
+                    case 'memes':
+                        
+                        axios.get(`https://dankexpress.herokuapp.com/${ query }`)
+                            .then( (resp) => {
+                                resp = resp.data;
+                                console.log( resp )
+                                if ( !resp.status.bool ) {
+                                        
+                                    console.log( resp.msg )
+                                    return;
+                                }
+                                    
+                                resp = resp.resp;
+                                app.load.load_arr = resp.map(( i ) => {
+                                        
+                                    return i.src
+                                })
+                            })
+                        break;
+                }
             }
             else {
                 
-                this.giphy.gifs = [];
-                this.load_gifs();
+                this.load.load_arr = [];
+                this.atch_load( this.load.load_type );
             }
         }
     }
 });
-app.connect();
+// app.connect();
+
+
+
+
 
 /*
-
 getUser: function() {
             
             var userObj = {
@@ -228,52 +339,8 @@ getUser: function() {
 
 */
 
-// init the connection
-// app.connect();
-// recving message
-// app.recv_msg();
-
 
 /*
-
-// holds the value of 'msg'
-        msg: '',
-        
-        // holds the value for 'query'
-        query: '',
-        
-        // the 'seen' variabelfor displaying things on the website
-        seen: true,
-        
-        // displays the group settings panel
-        // groupbin: false,
-        
-        // holds the resp from the backend webserver
-        resp: {},
-        
-        group_results: [],
-        
-        // displaying the cureent tima and date.
-        curr_date: date.getMonth() +'/'+ date.getDate() +'/'+ date.getFullYear() + ' ' + date.toLocaleTimeString(),
-        
-        gif_query: '',   // holds the value for the 'gihpy.gif_query'
-        gihpy: {
-            gifs: [],        // array of results from gihpy API in 'gifs'
-        },
-        
-        // the user info/settings
-        user: {
-            user_name: '',   // 'user_name' of the user in the chat room
-            
-            // manging the chat channels the user is on
-            session: {
-                group: 'global',
-                key: null
-            },
-            groups: {}
-            // whispers: {},
-        }
-    },
     methods: {
 
         // connectimg to the webserver
@@ -504,7 +571,7 @@ getUser: function() {
     }
 however if the perosn sends a whisper
 then do not print to the main stream
-*/
+
 // if ( this.msg.slice(0, 2) === 'w/' ) {
 
 //     // emit to backend
@@ -518,20 +585,6 @@ then do not print to the main stream
 //     });
 
 // }
-
-/*
-    const date = new Date;
-const app = new Vue({
-    el: '#app',
-    data: {
-        msg: '',
-        query: '',
-        resp: {},
-        
-    },
-    methods: {},
-    watch: {}
-});
 
 
 function random() {
@@ -547,3 +600,96 @@ function random() {
         return names[Math.floor(Math.random() * names.length)]
     }
 */
+
+// function checkType( input ) {
+            // let ext = input.slice(input.length - 3, input.length);
+            //     if ( ext === 'jpg' || ext === 'png' ) {
+            //         if( isLink( input ) ) {
+            //             return true;
+            //         }
+            //         return false;
+            //     }
+            //     return false;
+            // if ( isLink( this.msg.message ) ) { 
+            //     this.msg.type = 'link';
+            //     firebasedb.saveTo(`groups/${ this.session }/messages`, this.msg).(this);
+            // }
+            // else if ( isImage( this.msg.message ) ) {
+                    
+            //     this.msg.type = 'image';
+            //     firebasedb.saveTo(`groups/${ this.session }/messages`, this.msg).(this);
+            // }
+            // }
+
+// #                 //     var x = tool.filter(u, (i) => {
+                        
+// #                 //         return i.uid === obj.uid;
+// #                 //     })
+                    
+// #                 //     if ( x.length !== 0 ) {
+                        
+// #                 //         resp = callback({
+// #                 //             status: false,
+// #                 //             msg: `This user name '${ obj.profile.user_name }' already exist choose another user name.`
+// #                 //         });
+// #                 //     }
+// #                 //     else {
+                        
+// #                 //         obj = {
+// #                 //             joined: `${ date.getMonth() }/${ date.getDate()}/${ date.getFullYear() } ${ date.toLocaleTimeString()}`,
+// #                 //             profile: {
+// #                 //                 email: obj.email,
+// #                 //                 full_name: obj.full_name,
+// #                 //                 profile_picture: false,
+// #                 //                 user_name: obj.user_name !== undefined || '' ? obj.user_name : 'user_name'
+// #                 //             },
+// #                 //             groups: false,
+// #                 //             uid: tool.hash()
+// #                 //         };
+// #                 //         // saving the use to the firebase database
+// #                 //         saveTo(`usersdb/${ obj.profile.user_name }`, obj, (err, data) => {
+// #                 //             if (err) {
+                                
+// #                 //                 resp = callback(err, undefined);
+// #                 //             }
+// #                 //             else {
+                                
+// #                 //                 resp = callback(null, data);
+// #                 //             }
+// #                 //         })
+                        
+// #                 //         saveTo(``)
+                        
+// #                 //     }
+// #                 // }
+// #                 // else {
+                    
+// #                 //     if ( tool.not_empty( obj.user_name )  ) {
+                        
+// #                 //         obj = {
+// #                 //         joined: `${ date.getMonth() }/${ date.getDate()}/${ date.getFullYear() } ${ date.toLocaleTimeString()}`,
+// #                 //         profile: {
+// #                 //             email: obj.email,
+// #                 //             full_name: obj.full_name,
+// #                 //             profile_picture: false,
+// #                 //             user_name: obj.user_name
+// #                 //         },
+// #                 //         groups: {
+// #                 //             '0': 'global' 
+// #                 //         },
+// #                 //         uid: tool.hash()
+// #                 //         };
+// #                 //         // saving the use to the firebase database
+// #                 //         saveTo(`usersdb/${ obj.profile.user_name }`, obj, (err, data) => {
+// #                 //             if (err) {
+                            
+// #                 //                 resp = callback === undefined ? err : callback(err, undefined);
+// #                 //             }
+// #                 //             else {
+                            
+// #                 //                 resp = callback === undefined ? true : callback(null, data);
+// #                 //             }
+// #                 //         })
+// #                 //     }
+                    
+// #                 // }

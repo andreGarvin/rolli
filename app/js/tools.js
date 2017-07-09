@@ -47,6 +47,16 @@ function ObjectValues( obj ) {
     return values;
 }
 
+function ObjectKeys( obj ) {
+    
+    var keys = [];
+    for ( var i in obj ) {
+        
+        keys.push( i );
+    }
+    return keys;
+}
+
 function hash() {
 
     var hash_id = '__';
@@ -72,8 +82,18 @@ function hash() {
 
 export default {
     ObjectValues: ObjectValues,
+    ObjectKeys: ObjectKeys,
     includes: includes,
     filter: filter,
     hash: hash,
-    map: map
+    map: map,
+    not_empty: function( input ) {
+        
+        if ( ( input !== null || input !== undefined ) && input.length !== 0 ) {
+            
+            return true;
+        }
+        
+        return false;
+    }
 }

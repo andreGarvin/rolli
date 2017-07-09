@@ -2,15 +2,8 @@ html, body {
     height: 100%
 }
 
-.navbar {
-    margin-bottom: 0px;
-}
-
-.navbar.btn {
-    margin: 20px;
-}
-
-.sidebar-nav {
+/* sidebar container area */
+.sidebar-container {
     border-right: 1px solid #c7c1c1;
     background-color: #557;
     overflow-x: hidden;
@@ -24,31 +17,101 @@ html, body {
     left: 0;
 }
 
-.sidebar-nav h1 {
-    color: #eee;
+.sidebar-container input {
+    margin: 10px 0px 10px 0px;
 }
 
-.sidebar-nav .btn {
-    margin-top: 20px
+.main-container {
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: fixed;
+    display: block;
+    z-index: 1000;
+    padding: 0px;
+    bottom: 0;
+    top: 0px;
+    right: 0
 }
 
-.sidebar-nav input {
-    margin-top: 10px;
+/* the navabr in the mian-container */
+.navbar {
+    border-bottom: 1px solid #ddd;
+    padding: 14px;
+    margin: 0px;
 }
 
-#group:hover {
-    curosr: pointer;
-    background-color: #ddd
+#group_title_name {
+    margin: 0px;
 }
 
+/* the main screen displaying messages */
 .screen {
     border-bottom: 1px solid #c7c1c1;
     background-color: #fff;
     overflow-y: scroll;
     overflow-y: none;
-    height: 582px;
+    height: 430px;
 }
 
+/* this is button for the input box */
+.btn-pill {
+    background-color: #f1f8ff;
+    margin: 0px 10px 0px 0px;
+    display: inline-block;
+    white-space: nowrap;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.btn-pill:hover {
+    background-color:#ddeeff;
+    text-decoration:none;
+    color: #0366d6;
+}
+
+/* the input box */
+.input-box {
+    border-top: 1px solid #ddd;
+    /* margin-top: 120px; */
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 8px;
+}
+
+/* bin container */
+.bin {
+    border: 1px solid #c7c1c1;
+    background-color: #fff;
+    margin-bottom: 20px;
+    border-radius: 2px;
+    padding: 20px;
+}
+
+.bin input {
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.bin button {
+    margin-left: 6px;
+}
+
+/* the gif container screen */
+.image-container {
+    overflow-y: scroll;
+    height: 200px;
+}
+
+.src {
+    display: inline-block;
+    cursor: pointer;
+    margin: 7px;
+}
+
+
+/* the message bubbles */
 .msg {
     border: 1px solid #c7c1c1;
     word-wrap: break-word;
@@ -66,63 +129,19 @@ html, body {
     background-color: #fff;
 }
 
-.gif-container {
-    overflow-y: scroll;
-    height: 200px;
-}
-.gif-bin {
-    background-color: #fff;
-    border: 1px solid #c7c1c1;
-    border-radius: 2px;
-    position: absolute;
-    margin-top: 50px;
-    padding: 20px;
-}
-
-.gif-bin img {
-    display: inline-block;
-    margin: 7px;
-}
-
-.gif {
-    cursor: pointer;
-}
-
-.input-box {
-    padding: 20px;
-}
-
-.input-box input {
-    margin-top: 15px;
-}
-
-.form-group {
-    margin-bottom: 0px;
-}
-
 ul {
     list-style-type: none;
 }
 
-.options .btn {
-    margin: 20px;
-}
 
-
-.bin {
-    background-color: #fff;
+/*
+.src {
     border: 1px solid #c7c1c1;
+    background-color: #fff;
     border-radius: 2px;
+    position: absolute;
+    margin-top: 50px;
     padding: 20px;
-}
-
-.bin input {
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-
-.bin .btn {
-    margin-left: 6px;
 }
 
 .group-tag {
@@ -135,3 +154,9 @@ ul {
     padding: 10px;
     color: #fff;
 }
+
+#group:hover {
+    cursor: pointer;
+    background-color: #ddd
+}
+*/
