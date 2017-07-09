@@ -16,6 +16,7 @@
         <!-- <div id="app">
 
             <div class="container-fluid">
+<<<<<<< HEAD
 
                 sidebar
                 <div class="col-xs-4 col-md-3 sidebar-nav row">
@@ -122,16 +123,108 @@
                     </div>
 
                     <!-- end of the .row div -->
+=======
+                <div class="row">
+                    
+                    <!-- sidebar -->
+                    <div class="col-xs-4 col-sm-3 col-md-3 sidebar sidebar-container">
+                        <div class="container-fuild">
+                            <div class="row">
+                                <profilecontainer :user_name='user_data.profile.user_name' :profile_pic='user_data.profile.profile_pic' />
+                            </div>
+                            
+                            <input type="text" class="form-control" v-model='query' placeholder='search for groups' />
+                            
+                            <button @click='create_group' class="btn btn-success">create group</button>
+                            <!--<div v-for='group in Object.keys( groups )' class='col-md-12 col-xs-12'>-->
+                            <!--    <h3 @click='session = group' class="group-tag text-center"> {{ group }} </h3>-->
+                            <!--</div>-->
+                        </div>
+                        
+                        <!-- <div class="col-xs-12 col-sm-12 col-md-12">
+                             <h1 style='color: #fff;' class='text-center'> Rolli </h1>
+                        </div> -->
+                    </div>
+                    
+                    <!-- screen of the chat room -->
+                    <div class="main-container col-xs-8 col-sm-9 col-md-9 pull-right">
+                        <div class="container-fuild">
+                            
+                            <!-- navbar area -->
+                            <div class="navbar navbar-default navbar-static-top">
+                                <h2 id='group_title_name' class="text-center">{{ session }}</h2>
+                            </div>
+                             
+                            <!-- sreen area -->
+                            <div class="div screen col-xs-12 col-sm-12 col-md-12">
+                                
+                                <span v-if='Object.keys( groups ).length !== 0' v-for='msg in groups[session.toLowerCase()].messages'>
+                                    <message :msg='msg' :user_name='user_data.profile.user_name' />
+                                </span>
+                                
+                                <span v-else='Obect.keys( groups ).length === 0' class='col-xs-12 col-sm-12 col-md-12'>
+                                    <h1 style='margin-top: 95px;' class="text-center text-muted">You Should Join A Group <img src="https://github.global.ssl.fastly.net/images/icons/emoji/grimacing.png?v5" /></h1>
+                                </span>
+                                
+                                <!-- ( Gif/meme/emoji ) container -->
+                                <div v-if='load.load_arr.length !== 0' class="bin col-xs-6 col-md-7 col-xs-offset-5 col-md-offset-4">
+                    
+                                    <button @click='load.load_arr = []' type="button" class="close" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                    
+                                    <!--the input box -->
+                                    <input v-if='load.load_type !== "emojis"' style='margin-bottom: 20px' type="text" class="form-control" v-model='atch_query' placeholder='search' />
+                                    
+                                    <!-- displaying the attachments -->
+                                    <div class="image-container">
+                                        <img v-for='src in load.load_arr' @click='_send( load.load_type, src )' :src="src" class='src img-responsive img-rounded'/>
+                                    </div>
+                                </div>
+                                
+                            <!-- end of div.sreen -->
+                            </div>
+                            
+                            
+                            <!-- input box area -->
+                            <div class="input-box">
+                                <div class="container-fuild">
+                                    <div class="row">
+                                        <div style='margin: 10px;' class="col-xs-12 col-sm-12 col-md-12">
+                                            <button v-for='atch in ["gifs", "memes", "emojis"]' @click='atch_load( atch )' class='btn btn-pill text-muted lead'>{{ atch }}</button>
+                                        </div>
+                                        <div class="form-group form-group-lg col-sm-10 col-md-8">
+                                            <input @click='clearscreen' v-model='msg.message' v-on:keyup.enter='send_msg' type="text" class="form-control" placeholder='write messsage' />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        <!-- end div.container-fuild: inner -->
+                        </div>
+                    
+                    <!-- end div.main-container -->
+                    </div>
+                    
+                <!-- end div.row: outer -->
+>>>>>>> 7a0b6366d93088aa6240c1f9752306db7ec2097c
                 </div>
-
-                <!--end of .container-fluid div-->
+            
+            <!-- end container-fuild: outer -->
             </div>
+<<<<<<< HEAD
 
         <!--end of the #app div-->
         </div> -->
 
 
 
+=======
+            
+        <!--end of the #app div-->
+        </div>
+      
+>>>>>>> 7a0b6366d93088aa6240c1f9752306db7ec2097c
         <!-- Vuejs cdn -->
         <!-- <script src='https://unpkg.com/vue/dist/vue.js'></script> -->
 

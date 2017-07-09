@@ -10,6 +10,8 @@ firebase.initializeApp({
     messagingSenderId: "1097445602183"
 })
 
+const date = new Date;
+
 /*
     creates new data to insert to the database 
     such groups or a new use to the firebase db
@@ -26,74 +28,42 @@ function create( type, obj, callback ) {
                 
                 u = u.val();
                 
-                if ( tool.includes(Object.keys( u ), obj.user_name) ) {
+                var users_emails = tool.map(tool.ObjectValues( u.val ), ( i ) => {
                     
+                    return i.email;
+                })
+                // checking the user the user_name exist and the email
+                if (
+                    tool.includes(users_emails, obj.email)
+                    &&
+                    tool.includes(tool.ObjectKeys( u ), obj.user_name )
+                ) {
                     
-                    var x = tool.filter(u, (i) => {
-                        
-                        return i.uid === obj.uid;
-                    })
-                    
-                    if ( x.length !== 0 ) {
-                        
-                        resp = callback({
-                            status: false,
-                            msg: `This user name '${ obj.profile.user_name }' already exist choose another user name.`
-                        });
-                    }
-                    else {
-                        
-                        obj = {
-                            joined: obj.date,
-                            profile: {
-                                email: obj.email,
-                                full_name: obj.full_name,
-                                profile_picture: false,
-                                user_name: obj.user_name !== undefined || '' ? obj.user_name : 'user_name'
-                            },
-                            groups: false,
-                            uid: tool.hash()
-                        };
-                        // saving the use to the firebase database
-                        saveTo(`usersdb/${ obj.profile.user_name }`, obj, (err, data) => {
-                            if (err) {
-                                
-                                resp = callback(err, undefined);
-                            }
-                            else {
-                                
-                                resp = callback(null, data);
-                            }
-                        })
-                        
-                    }
+                    resp = callback({
+                        status: false,
+                        msg: 'user exist',
+                    }, undefined);
                 }
                 else {
                     
-                    obj = {
-                        joined: obj.date,
-                        profile: {
-                            email: obj.email,
-                            full_name: obj.full_name,
-                            profile_picture: false,
-                            user_name: obj.user_name !== undefined || '' ? obj.user_name : 'user_name'
-                        },
-                        groups: false,
-                        uid: tool.hash()
-                    };
-                    // saving the use to the firebase database
-                    saveTo(`usersdb/${ obj.profile.user_name }`, obj, (err, data) => {
-                        if (err) {
-                            
-                            resp = callback(err, undefined);
-                        }
-                        else {
-                            
-                            resp = callback(null, data);
-                        }
-                    })
-                    
+                    if ( tool.not_empty( obj.user_name )  ) {
+                        
+                        saveTo(`usersdb/${ obj.user_name }`, )
+                    }
                 }
+                    
+                //     resp = callback(null, {
+                //         obj: obj,
+                //         msg: `Created user '${ obj.user_name }'`
+                //     });
+                // }
+                // else {
+                    
+                //     resp = callback({
+                //         status: false,
+                //         msg: 'create a user name'
+                //     }, undefined);
+                // }
             });
             
             break;
@@ -173,7 +143,7 @@ function search_db( obj, callback ) {
     
     firebase.database().ref('groups_db').on('value', (g) => {
         
-        var x = tool.filter(Object.keys(g), (j) => {
+        var x = tool.filter(tool.ObjectKeys(g), (j) => {
             
             return j === obj.query;
         })
@@ -181,11 +151,12 @@ function search_db( obj, callback ) {
         
         if ( x.length !== 0 ) {
             
-            return callback( null, x );
-            // var y = x.map((e) => {
+            // var y = tool.map(x, (e) => {
                 
             //     return groups
             // });
+            
+            return callback( null, x );
         }
         else {
             
@@ -203,12 +174,17 @@ function get_user( userObj, callback ) {
     const usersdb = firebase.database().ref('usersdb');
     usersdb.on('value', (u) => {
         
-        var users = tool.map(tool.ObjectValues( u.val() ), ( i ) => {
+        /*
+            goes over all the users in the usersdb array
+            returns each users email.
+        */
+        var users_emails = tool.map(tool.ObjectValues( u.val() ), ( i ) => {
             
             return i.email;
         });
         
-        if ( tool.includes(users, userObj.email) ) {
+        // checks to see if the user email exist in the ueser_emails array
+        if ( tool.includes(users_emails, userObj.email) ) {
             
             
             return callback(null, u.val()[ userObj.user_name ]);
@@ -216,7 +192,7 @@ function get_user( userObj, callback ) {
         
         return callback({
             status: false,
-            msg: 'create_user'
+            userObj: userObj
         }, undefined);
     });
 }
@@ -224,13 +200,12 @@ function get_user( userObj, callback ) {
 function get_groups( obj, callback ) {
     
     firebase.database().ref('groups_db').on('value', (g) => {
-        
-        const groups = g.val();
+        g = g.val();
         
         var group_arr = {};
-        var x = tool.filter(Object.keys( groups ), (g_arr) => {
+        var x = tool.filter(Object.keys( g ), (g_arr) => {
             
-            var g_members = groups[g_arr].db_obj.members;
+            var g_members = g[g_arr].db_obj.members;
             return (
                 tool.includes( obj.groups, g_arr )
                 &&
@@ -241,7 +216,7 @@ function get_groups( obj, callback ) {
         
         for ( var s in x ) {
             
-            group_arr[ x[s] ] = groups[ x[s] ];
+            group_arr[ x[s] ] = g[ x[s] ];
         }
         
         return callback( group_arr );
