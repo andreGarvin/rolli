@@ -287,7 +287,6 @@ const app = new Vue({
                         axios.get(`https://dankexpress.herokuapp.com/${ query }`)
                             .then( (resp) => {
                                 resp = resp.data;
-                                console.log( resp )
                                 if ( !resp.status.bool ) {
 
                                     console.log( resp.msg )
