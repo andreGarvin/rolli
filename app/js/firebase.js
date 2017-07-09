@@ -12,12 +12,28 @@ firebase.initializeApp({
 
 const date = new Date;
 
-/*
-    creates new data to insert to the database
-    such groups or a new use to the firebase db
-*/
-function create( type, obj, callback ) {
+// saves data to the data by taking a path to the data insertion
+function saveTo( db_path, input ) {
 
+    try {
+
+        firebase.database().ref(db_path).set(input);
+        return;
+    }
+    catch (e) {
+
+        return {
+            status: false,
+            msg: e.message
+        };
+    }
+}
+
+function create( type, obj, callback ) {
+    /*
+        creates new data to insert to the database
+        such groups or a new use to the firebase db
+    */
     var resp;
     switch ( type ) {
 
@@ -109,76 +125,54 @@ function create( type, obj, callback ) {
             })
             break;
     }
-
     return resp;
 }
 
 
-// saves data to the data by taking a path to the data insertion
-function saveTo( db_path, input, callback ) {
 
-    try {
-
-        firebase.database().ref(db_path).set(input);
-
-        return callback(null) || 0;
-    }
-    catch (e) {
-
-        return callback({
-            status: false,
-            msg: e.message
-        }) || 0;
-    }
-}
-
-// gets specfic data from the firebase database
-// function getFrom( path, callback ) {}
-
-/*
-    searchs throughout the entire database
-    for user, groups, or messages sent
-*/
 function search_db( obj, callback ) {
+    /*
+        searchs throughout the entire database
+        for user, groups, or messages sent
+    */
 
-    firebase.database().ref('groups_db').on('value', (g) => {
+    firebase.database().ref('groups_db').on('value', (grups) => {
 
-        var x = tool.filter(tool.ObjectKeys(g), (j) => {
+        //  the groups object
+        groups = groups.val();
+        var matchs = tool.filter(tool.ObjectKeys(groups), ( group_name ) => {
 
-            return j === obj.query;
+            return groups_name.slice(0, obj.query) === obj.query;
         })
 
 
-        if ( x.length !== 0 ) {
+        if ( matchs.length !== 0 ) {
 
-            // var y = tool.map(x, (e) => {
-
-            //     return groups
-            // });
-
-            return callback( null, x );
+            return callback( null, matchs );
         }
         else {
 
             return callback({
                 status: false,
-                msg: `there are not reusults for '${ obj.query }'`
+                msg: `There are not reusults for '${ obj.query }'.`
             });
         }
     })
 }
 
 // get the user information once the user is signed in
-function get_user( userObj, callback ) {
+function fetch_user( userObj, callback ) {
 
     const usersdb = firebase.database().ref('usersdb');
-    usersdb.on('value', (u) => {
+    usersdb.on('value', (users) => {
 
+        // the users_db object
+        users = users.val();
         /*
             goes over all the users in the usersdb array
             returns each users email.
         */
-        var users_emails = tool.map(tool.ObjectValues( u.val() ), ( i ) => {
+        var users_emails = tool.map(tool.ObjectValues( users ), ( i ) => {
 
             return i.email;
         });
@@ -187,275 +181,58 @@ function get_user( userObj, callback ) {
         if ( tool.includes(users_emails, userObj.email) ) {
 
 
-            return callback(null, u.val()[ userObj.user_name ]);
+            return callback(null, users[ userObj.user_name ])
         }
 
         return callback({
             status: false,
-            userObj: userObj
-        }, undefined);
+            userObj: userObj,
+            msh: `User '${ userObj.user_name }' does not exist.`
+        }, undefined)
     });
 }
 
-function get_groups( obj, callback ) {
+function fetch_groups( obj, callback ) {
 
-    firebase.database().ref('groups_db').on('value', (g) => {
-        g = g.val();
+    firebase.database().ref('groups_db').on('value', (groups) => {
 
-        var group_arr = {};
-        var x = tool.filter(Object.keys( g ), (g_arr) => {
+        // holds the groups object
+        groups = groups.val();
 
-            var g_members = g[g_arr].db_obj.members;
+        // the object holding the users groups
+        var user_groups = {};
+        var memeber_in_groups = tool.filter(Object.keys( groups ), (group_name) => {
+
+            // getting back the arry of users in the group
+            var group_members = Object.keys( groups[group_name].db_obj.members );
+
+            // returns back the groups if the user is a group memeber
             return (
-                tool.includes( obj.groups, g_arr )
-                &&
-                tool.includes( tool.ObjectValues( g_members ), obj.user_name )
+              (
+                  tool.includes( group_members, obj.user_name )
+                  &&
+                  tool.includes( tool.ObjectValues( groups[group_name].db_obj.members ), obj.uid )
+              )
+              &&
+              tool.includes( obj.groups, group_name )
             );
         })
 
+        for ( var s in memeber_in_groups ) {
 
-        for ( var s in x ) {
-
-            group_arr[ x[s] ] = g[ x[s] ];
+            // insert the groups the user is part of in the 'user_groups' object
+            user_groups[ memeber_in_groups[s] ] = groups[ memeber_in_groups[s] ];
         }
 
-        return callback( group_arr );
+        return callback( user_groups );
     })
 }
 
 export default {
-    firebase: firebase,
-    saveTo: saveTo,
+    fetch_groups: fetch_groups,
     search_db: search_db,
-    get_user: get_user,
-    create: create,
-    get_groups: get_groups
+    firebase: firebase,
+    fetch_user: fetch_user,
+    saveTo: saveTo,
+    create: create
 }
-
-/*
-exports.create_group_db = function( group_db_obj, callback ) {
-
-    db.get('db_obj', (err, db_obj) => {
-        if (err) {
-
-            return callback({
-                type: 'db',
-                msg: err.message
-            }, undefined);
-        }
-
-        const db_groups = Object.keys( db_obj.db_groups );
-
-        if ( es6.includes( db_groups, group_db_obj.group_name ) === false ) {
-
-            const new_db_obj = db_obj.db_groups;
-            new_db_obj[group_db_obj.group_name] = group_db_obj;
-
-            db.put('db_obj', db_obj, (err) => {
-                if (err) {
-
-                    return callback({
-                        type: 'db',
-                        msg: `error: error occured while trying to create <db: ${ group_db_obj.group_name }>; ${ err.message }`
-                    }, undefined);
-                }
-
-                return callback(null, {
-                    type: 'create-group',
-                    resp: group_db_obj
-                });
-
-            });
-
-        }
-        else {
-
-            return callback({
-                type: 'ui',
-                msg: `Group '${ group_db_obj.group_name }' already exists/created.`
-            }, undefined);
-        }
-
-    });
-
-};
-
-
-exports.get_groups_db = function( req_groups, callback ) {
-
-    db.get('db_obj', function(err, db_obj) {
-        if (err) {
-
-            return callback({
-                type: 'db',
-                msg: err.message
-            }, undefined);
-        }
-
-        const db_groups = db_obj.db_groups;
-
-        var groups = {};
-        for ( var i in db_groups ) {
-
-            if ( req_groups.length === 0 ) {
-
-                if ( i === 'global' ) {
-
-                    groups[i] = db_groups[i];
-                }
-            }
-            else if ( es6.includes( req_groups, i ) ) {
-                groups[i] = db_groups[i];
-            }
-
-        }
-
-        return callback(null, {
-            type: 'get-groups',
-            groups: groups
-        });
-
-    });
-
-};
-
-exports.search_db = function( query_obj, callback ) {
-
-    db.get('db_obj', (err, db_obj) => {
-        if (err) {
-
-            return callback({
-                type: 'db',
-                msg: `error: ${ err.message }`
-            }, undefined);
-        }
-
-        if ( query_obj.db_name === 'uni' ) {
-            console.log( db_obj.db_groups );
-        }
-        else if ( query_obj.action === 'user' ) {
-
-
-            try {
-
-                return callback(null, {
-                    type: 'user-search',
-                    data: db_obj[ query_obj.db_name ].members
-                });
-            }
-            catch (err) {
-                return callback(null, {
-                    type: 'user-search',
-                    data:  `Group '${ query_obj.db_name }' has no memebrs`
-                });
-            }
-
-        }
-        else if ( query_obj.action === 'group' ) {
-
-            const db_groups = Object.keys( db_obj.db_groups ).filter((group) => {
-                return group.slice(0, query_obj.db_name.length) === query_obj.db_name;
-            });
-
-            if ( db_groups.length ) {
-
-                return callback(null, {
-                    type: 'search-groups',
-                    data: db_groups
-                });
-            }
-
-            return callback({
-                type: 'search-groups',
-                msg: `No results for '${ query_obj.db_name }'.`
-            }, undefined);
-
-        }
-
-        return callback({
-            type: 'search',
-            msg: `search for '${ query_obj.action ? query_obj.action : 'null query _action_' }' resulted to null; query search in '${ query_obj.db_name ? query_obj.db_name: 'null db_name' }' was not successful.`
-        }, undefined);
-
-    });
-
-};
-
-
-exports.save_message = function( payload, callback ) {
-
-    db.get('db_obj', (err, db_obj) => {
-        if (err) {
-            return callback({
-                type: 'db',
-                msg: err.message
-            }, undefined);
-        }
-
-        const db_name = payload.session.group;
-        if ( es6.includes( Object.keys( db_obj.db_groups ), db_name ) ) {
-
-            db_obj.db_groups[db_name].msgs.push( payload );
-
-            db.put('db_obj', db_obj, (err) => {
-                if (err) {
-                    return callback({
-                        type: 'send-message',
-                        msg: err.message
-                    }, undefined);
-                }
-
-                return callback(null, {
-                   type: 'send-message',
-                   resp: payload
-                });
-
-            });
-        }
-
-    });
-
-};
-
-
-
-    // function isMember( group_members, user_name ) {
-
-    //     for ( var i in group_members ) {
-
-    //         if ( group_members[i] === i ) {
-
-    //             return true;
-    //         }
-    //     }
-
-    //     return false;
-    // }
-
-// side note add the security functionaliry for the session name & key for groups
-                // if ( isMember( db_groups[i].members, user_name ) ) {
-                //     groups[i] = db_groups[i];
-                // }
-
-// user gloabl search
-            // if ( query_obj.db_name === '' ) {
-
-            //     return callback(null, {
-            //         type: 'global-search',
-            //         data: Object.keys( db_obj.db_groups ).map( (group) => {
-
-            //             if ( db_obj.db_groups[group].members !== undefined ) {
-            //                 return db_obj.db_groups[group];
-            //             }
-
-            //         })
-            //     });
-
-            // }
-
-
-exports.activeUser = function( action, user_name, socket_id ) {};
-
-exports.addUserToGroup = function( db_name, user_name ) {};
-exports.deleteUserFromGroup = function( db_name, user_name ) {};
-*/

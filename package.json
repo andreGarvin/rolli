@@ -4,7 +4,7 @@
   "description": "This is a multi group chat app built in firebase & Vue.js",
   "main": "index.js",
   "scripts": {
-    "build:prod": "webpack -p && cp app/index.html app/main.css dist",
+    "build:prod": "webpack -p && cp app/index.html app/main.css app/rolli.jpg dist",
     "build:dev": "webpack -d && cp app/index.html app/main.css dist && webpack-dev-server --content-base src/ --inline --hot"
   },
   "repository": {

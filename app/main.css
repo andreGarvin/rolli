@@ -21,6 +21,10 @@ html, body {
     margin: 10px 0px 10px 0px;
 }
 
+.profile-container {
+    cursor: pointer;
+}
+
 .main-container {
     overflow-x: hidden;
     overflow-y: auto;
@@ -31,6 +35,16 @@ html, body {
     bottom: 0;
     top: 0px;
     right: 0
+}
+
+/* group tag display names style */
+.group-tag {
+    background-color: transparent;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+    padding: 10px;
+    color: #fff;
 }
 
 /* the navabr in the mian-container */
@@ -50,7 +64,7 @@ html, body {
     background-color: #fff;
     overflow-y: scroll;
     overflow-y: none;
-    height: 430px;
+    height: 448px;
 }
 
 /* this is button for the input box */
@@ -84,7 +98,9 @@ html, body {
 .bin {
     border: 1px solid #c7c1c1;
     background-color: #fff;
-    margin-bottom: 20px;
+    /*margin-bottom: 20px;*/
+    position: absolute;
+    /*margin-top: 50px;*/
     border-radius: 2px;
     padding: 20px;
 }
@@ -144,19 +160,8 @@ ul {
     padding: 20px;
 }
 
-.group-tag {
-    background-color: transparent;
-    border: 1px solid #eee;
-    margin-bottom: 10px;
-    border-radius: 2px;
-    margin-top: 10px;
-    cursor: pointer;
-    padding: 10px;
-    color: #fff;
-}
-
 #group:hover {
-    cursor: pointer;
     background-color: #ddd
+    cursor: pointer;
 }
 */
