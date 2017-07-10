@@ -1,1 +1,1 @@
-# rolli: A simple multi group chat app giving popele the ability to form groups and communicate with many people.
+# rolli: A simple multi group chat app giving poeple the ability to form groups and communicate amongst others.
