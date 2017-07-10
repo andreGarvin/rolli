@@ -1,41 +1,3 @@
-function map(arr, callback) {
-
-    var newArray = [];
-    for ( var i in arr ) {
-
-        newArray.push( callback( arr[i] ) );
-    }
-
-    return newArray;
-}
-
-function includes( arr, item ) {
-
-    for ( var i in arr ) {
-
-        if ( arr[i] === item ) {
-
-            return true;
-        }
-    }
-
-    return false;
-}
-
-function filter( arr, callback ) {
-
-    var newArray = [];
-    for ( var i in arr ) {
-
-        if ( callback( arr[i] ) ) {
-
-            newArray.push( arr[i] );
-        }
-    }
-
-    return newArray;
-}
-
 function hash() {
 
     var hash_id = '__';
@@ -58,20 +20,7 @@ function hash() {
     return hash_id;
 }
 
-
 export default {
-    hash: hash,
-    not_empty: function( input ) {
-
-        if ( ( input !== null || input !== undefined ) && input.length !== 0 ) {
-
-            return true;
-        }
-
-        return false;
-    },
-    // I made these methods because soemtimes es6 fucntions dont work
-    includes: includes,
-    filter: filter,
-    map: map
+    // not_empty: not_empty,
+    hash: hash
 }

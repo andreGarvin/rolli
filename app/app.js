@@ -74,9 +74,9 @@ const app = new Vue({
 
 
             let firebaseUser = {
-                user_name: 'jhonD',
-                email: 'jhonDoe@gmail.com',
-                full_name: 'jhon doe',
+                user_name: 'andreGrvin',
+                email: 'andregarvin718@gmail.com',
+                full_name: 'andre garvin',
             };
             firebasedb.fetch_user(firebaseUser, (err, user_data) => {
                 if (err) {
@@ -141,7 +141,7 @@ const app = new Vue({
                 group_name: group_name,
                 admin: this.user_data.user_name
             };
-            if ( tool.not_empty( groups_name ) ) {
+            if ( groups_name.length !== 0 ) {
 
                 firebasedb.create('group', group_obj, (err, new_group) => {
                   if (err) return console.log(err);

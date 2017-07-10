@@ -66,7 +66,7 @@ function create( type, obj, callback ) {
 
 
                     // checking the user the user_name exist and the email
-                    if ( tool.includes(users_emails, obj.email) ) {
+                    if ( user_emails.includes( obj.email ) ) {
 
                         // return back the callback
                         resp = callback({
@@ -105,8 +105,11 @@ function create( type, obj, callback ) {
                                           msg: `User Rolli Account Created: Welcome '${ obj.user_name }' To Rolli.`,
                                           obj: obj
                                       })
+
+                                      add_user_to_group('global', obj.user_name, templateUserObj.uid)
                                   }
                             })
+
                   }
             });
             break;
@@ -118,7 +121,7 @@ function create( type, obj, callback ) {
 
                     groups = groups.val();
                     // checks if the group name does not exist
-                    if ( !tool.includes(Object.keys( groups ), obj.group_name) ) {
+                    if ( !Object.keys( groups ).includes( obj.group_name ) ) {
 
                         // fomat the group obj with user input from 'obj'
                         templateGroupObj = {
@@ -142,10 +145,11 @@ function create( type, obj, callback ) {
                             }
                             else {
 
+
                                 resp = callback(null, {
                                      status: true,
                                      msg: `New Group '${ obj.group_name }' Was Created.`
-                                });
+                                })
                             }
                         })
 
@@ -166,6 +170,25 @@ function create( type, obj, callback ) {
     return resp;
 }
 
+// adds new user to the group
+function add_user_to_group( group_name, user_name, uid ) {
+
+    saveTo(`groups_db/${ group_name }/db_obj/memebers/${ user_name }`, uid);
+    firebase.database().ref('groups_db').on('value', ( groups ) => {
+
+        let group_memebers = Object.keys( groups.val()[ group_name ].db_obj.memebers );
+        if ( group_memebers.includes( user_name ) ) {
+
+            console.log(`You Are Now A Memeber Of '${ group_name }'`)
+            return true;
+        }
+        else {
+
+              console.log(`You Were Not Added To '${ group_name }'`)
+              return false;
+        }
+    })
+};
 
 
 function search_db( obj, callback ) {
@@ -178,8 +201,9 @@ function search_db( obj, callback ) {
 
         //  the groups object
         groups = groups.val();
+        obj.groups
         // returns back the groups names that macth the query string
-        var matchs = tool.filter(Object.keys(groups), ( group_name ) => {
+        var matchs = Object.keys(groups).filter( ( group_name ) => {
 
             return groups_name.slice(0, obj.query) === obj.query;
         })
@@ -220,7 +244,7 @@ function fetch_user( userObj, callback ) {
         });
 
         // checks to see if the user email exist in the ueser_emails array
-        if ( tool.includes(users_emails, userObj.email) ) {
+        if ( users_emails.includes( userObj.email ) ) {
 
             return callback(null, users[ userObj.user_name ])
         }
@@ -243,7 +267,7 @@ function fetch_groups( obj, callback ) {
 
         // the object holding the users groups
         var user_groups = {};
-        var memeber_in_groups = tool.filter(Object.keys( groups ), (group_name) => {
+        var memeber_in_groups = Object.keys( groups ).filter( (group_name) => {
 
             // getting back the arry of users in the group
             var group_members = Object.keys( groups[group_name].db_obj.members );
@@ -251,12 +275,12 @@ function fetch_groups( obj, callback ) {
             // returns back the groups if the user is a group memeber
             return (
               (
-                  tool.includes( group_members, obj.user_name )
+                  group_members.includes( obj.user_name )
                   &&
-                  tool.includes( Object.values( groups[group_name].db_obj.members ), obj.uid )
+                  Object.values( groups[group_name].db_obj.members ).includes( obj.uid )
               )
               &&
-              tool.includes( obj.groups, group_name )
+              obj.groups.includes( group_name )
             );
         })
 
@@ -279,10 +303,11 @@ export default {
     //
     //     }
     // }
+    add_user_to_group: add_user_to_group,
     fetch_groups: fetch_groups,
+    fetch_user: fetch_user,
     search_db: search_db,
     firebase: firebase,
-    fetch_user: fetch_user,
     saveTo: saveTo,
     create: create
 }
