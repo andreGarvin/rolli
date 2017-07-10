@@ -10,22 +10,36 @@ firebase.initializeApp({
     messagingSenderId: "1097445602183"
 })
 
-const date = new Date;
+const date = new Date,
+// formatting the current time
+current_time = `${ date.getMonth() }/${ date.getDate()}/${ date.getFullYear() } ${ date.toLocaleTimeString()}`;
 
-// saves data to the data by taking a path to the data insertion
-function saveTo( db_path, input ) {
+
+function saveTo( db_path, input, callback ) {
+    /*
+        saves data to the data by taking
+        a path to the data insertion this
+        fucntion runs sync and async.
+    */
 
     try {
 
         firebase.database().ref(db_path).set(input);
-        return;
+        return callback(null, {
+            status: true,
+            msg: `firebase: Data Was Stored To '${ db_path }'.`
+        }) || true;
     }
     catch (e) {
 
-        return {
-            status: false,
-            msg: e.message
-        };
+          // if any erros aoccur then return back the error message
+          return callback({
+              status: false,
+              msg: e.message
+          }) || {
+                status: false,
+                msg: e.message
+          };
     }
 }
 
@@ -34,97 +48,121 @@ function create( type, obj, callback ) {
         creates new data to insert to the database
         such groups or a new use to the firebase db
     */
+
     var resp;
+    let templateUserObj, templateGroupObj;
     switch ( type ) {
 
         case 'user':
 
+            firebase.database().ref('usersdb').on('value', ( users ) => {
 
-            firebase.database().ref('usersdb').on('value', ( u ) => {
+                    users = users.val();
+                    // gets all the users emails
+                    var users_emails = Object.values( users ).map( ( i ) => {
 
-                u = u.val();
+                        return i.email;
+                    })
 
-                var users_emails = tool.map(tool.ObjectValues( u.val ), ( i ) => {
 
-                    return i.email;
-                })
-                // checking the user the user_name exist and the email
-                if (
-                    tool.includes(users_emails, obj.email)
-                    &&
-                    tool.includes(tool.ObjectKeys( u ), obj.user_name )
-                ) {
+                    // checking the user the user_name exist and the email
+                    if ( tool.includes(users_emails, obj.email) ) {
 
-                    resp = callback({
-                        status: false,
-                        msg: 'user exist',
-                    }, undefined);
-                }
-                else {
-
-                    if ( tool.not_empty( obj.user_name )  ) {
-
-                        saveTo(`usersdb/${ obj.user_name }`, )
+                        // return back the callback
+                        resp = callback({
+                            status: false,
+                            msg: 'This Rolli Account Already Exist.',
+                        }, undefined);
                     }
-                }
+                    else {
 
-                //     resp = callback(null, {
-                //         obj: obj,
-                //         msg: `Created user '${ obj.user_name }'`
-                //     });
-                // }
-                // else {
+                           //  format the userObj with given user input from 'obj'
+                           templateUserObj = {
+                                uid: tool.hash(),
+                                email: obj.email,
+                                invitations: false,
+                                groups: {
+                                    0: 'global'
+                                },
+                                profile: {
+                                    joined: current_time,
+                                    profile_picture: false,
+                                    full_name: obj.full_name,
+                                    user_name: obj.user_name
+                                },
+                            };
+                            // saving the user to the firebase database 'userdb' collection
+                            saveTo(`usersdb/${ obj.user_name }`, templateUserObj, (err, data) => {
+                                  if (err) {
 
-                //     resp = callback({
-                //         status: false,
-                //         msg: 'create a user name'
-                //     }, undefined);
-                // }
+                                      resp = callback(err, undefined)
+                                  }
+                                  else {
+
+                                      conole.log( data.msg )
+                                      resp = callback(null, {
+                                          status: true,
+                                          msg: `User Rolli Account Created: Welcome '${ obj.user_name }' To Rolli.`,
+                                          obj: obj
+                                      })
+                                  }
+                            })
+                  }
             });
-
             break;
 
         case 'group':
 
             // change to code to check if the group exist in the dbatabse first
-            firebase.database().ref('groups_db').on('value', (g) => {
+            firebase.database().ref('groups_db').on('value', (groups) => {
 
-                g = Object.keys( g );
+                    groups = groups.val();
+                    // checks if the group name does not exist
+                    if ( !tool.includes(Object.keys( groups ), obj.group_name) ) {
 
-                if ( tool.includes(g, obj.group_name) ) {
+                        // fomat the group obj with user input from 'obj'
+                        templateGroupObj = {
+                            attachments: false,
+                            db_obj: {
+                                admin: obj.user_name,
+                                init: current_time,
+                                key: obj.key,
+                                memebers: {}
+                            },
+                            messages: false,
+                            requests: false
+                        };
 
-                    obj = {
-                        attachments: false,
-                        db_obj: {
-                            admin: obj.user_name,
-                            key: obj.key
-                        },
-                        messages: false
-                    };
+                        templateGroupObj.db_obj.memebers[ obj.user_name ] = obj.uid;
+                        // saving the group data to the firebase database 'groups_db' collection
+                        saveTo(`groups_db/${ obj.group_name }`, templateGroupObj, (err, data) => {
+                            if (err) {
 
-                    // saving the use to the firebase database
-                    saveTo(`groups_db/${ obj.group_name }`, obj, (err, data) => {
-                        if (err) {
+                                resp = callback(err, undefined);
+                            }
+                            else {
 
-                            resp = callback(err, undefined);
-                        }
-                        else {
+                                resp = callback(null, {
+                                     status: true,
+                                     msg: `New Group '${ obj.group_name }' Was Created.`
+                                });
+                            }
+                        })
 
-                            resp = callback(null, data);
-                        }
-                    })
+                    }
+                    else {
 
-                }
-                else {
-
-                    resp = callback({
-                        status: false,
-                        msg: 'Group name already exist, please another group name.'
-                    });
-                }
+                          // if the group exist return callback
+                          resp = callback({
+                                status: false,
+                                msg: `Sorry Group Name '${ obj.group_name }' Already Exist, Please choose Another Group Name.`
+                          })
+                    }
             })
             break;
     }
+
+    // returns back whatever response from ether switch statement
     return resp;
 }
 
@@ -140,18 +178,20 @@ function search_db( obj, callback ) {
 
         //  the groups object
         groups = groups.val();
-        var matchs = tool.filter(tool.ObjectKeys(groups), ( group_name ) => {
+        // returns back the groups names that macth the query string
+        var matchs = tool.filter(Object.keys(groups), ( group_name ) => {
 
             return groups_name.slice(0, obj.query) === obj.query;
         })
 
-
+        // if 'match' is not empty then return back the array of matches
         if ( matchs.length !== 0 ) {
 
             return callback( null, matchs );
         }
         else {
 
+            // elese retrun back no matches were found
             return callback({
                 status: false,
                 msg: `There are not reusults for '${ obj.query }'.`
@@ -172,7 +212,9 @@ function fetch_user( userObj, callback ) {
             goes over all the users in the usersdb array
             returns each users email.
         */
-        var users_emails = tool.map(tool.ObjectValues( users ), ( i ) => {
+        // ObjectValues( users )
+        let users_values = Object.values( users ),
+        users_emails = users_values.map( ( i ) => {
 
             return i.email;
         });
@@ -180,10 +222,10 @@ function fetch_user( userObj, callback ) {
         // checks to see if the user email exist in the ueser_emails array
         if ( tool.includes(users_emails, userObj.email) ) {
 
-
             return callback(null, users[ userObj.user_name ])
         }
 
+        // return back a message and the userObj
         return callback({
             status: false,
             userObj: userObj,
@@ -211,7 +253,7 @@ function fetch_groups( obj, callback ) {
               (
                   tool.includes( group_members, obj.user_name )
                   &&
-                  tool.includes( tool.ObjectValues( groups[group_name].db_obj.members ), obj.uid )
+                  tool.includes( Object.values( groups[group_name].db_obj.members ), obj.uid )
               )
               &&
               tool.includes( obj.groups, group_name )
@@ -228,7 +270,15 @@ function fetch_groups( obj, callback ) {
     })
 }
 
+
 export default {
+    // var auth = {
+    //     sig_in: function() {},
+    //     sign_up: function () {},
+    //     log_out: function() {
+    //
+    //     }
+    // }
     fetch_groups: fetch_groups,
     search_db: search_db,
     firebase: firebase,

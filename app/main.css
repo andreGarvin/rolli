@@ -25,6 +25,30 @@ html, body {
     cursor: pointer;
 }
 
+.menu {
+    box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    border: 1px solid rgba(0,0,0,.15);
+    margin: 0px 0px 0px 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    position: absolute;
+    min-width: 160px;
+    font-size: 16px;
+    padding: 5px 0;
+}
+
+.menu p {
+    padding: 4px;
+    margin: 3px;
+}
+
+.menu p:hover {
+    background-color: #fbfafa;
+    cursor: pointer;
+    color: #33a7ab;
+}
+
 .main-container {
     overflow-x: hidden;
     overflow-y: auto;
@@ -98,10 +122,9 @@ html, body {
 .bin {
     border: 1px solid #c7c1c1;
     background-color: #fff;
-    /*margin-bottom: 20px;*/
     position: absolute;
-    /*margin-top: 50px;*/
     border-radius: 2px;
+    margin-top: 101px;
     padding: 20px;
 }
 

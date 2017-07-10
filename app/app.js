@@ -13,9 +13,25 @@ const date = new Date;
 const app = new Vue({
     el: '#app', // selecting the target element on the html page
     data: {
+        // auth: {
+        //     email: '',
+        //     password: '',
+        //     user_name: ''
+        // },
         user_data: undefined,
-        groups: {},
         session: 'global',
+        groups: {},
+        new_group: {
+            group_name: '',
+            key: ''
+        },
+        show_dropdown: false,
+        setting_items: [
+            'create group',
+            'account',
+            'settings',
+            'logout',
+        ],
         msg: {
             msg_id: '',
             date: `${ date.getMonth() }/${ date.getDate()}/${ date.getFullYear() } ${ date.toLocaleTimeString()}`,
@@ -27,6 +43,7 @@ const app = new Vue({
         query: '',
         atch_query: '',
         load: {
+            show: false,
             load_type: '',
             load_arr: []
         },
@@ -34,7 +51,13 @@ const app = new Vue({
     },
     components: {
         message: VueComponent.message,
-        profilecontainer: VueComponent.profilecontainer
+        profilecontainer: VueComponent.profilecontainer,
+        'dropdown-menu': {
+              props: [ 'condition', 'items', 'method' ],
+              template: `<ul v-if='condition' class='text-left'>
+                             <p v-for='item in items' @click='method( item )'>{{ item }}</p>
+                        </ul>`
+        }
     },
     methods: {
         connect: function() {
@@ -51,28 +74,25 @@ const app = new Vue({
 
 
             let firebaseUser = {
-                user_name: 'andreGrvin',
-                email: 'andregarvin718@gmail.com',
-                full_name: 'andre garvin',
+                user_name: 'jhonD',
+                email: 'jhonDoe@gmail.com',
+                full_name: 'jhon doe',
             };
             firebasedb.fetch_user(firebaseUser, (err, user_data) => {
                 if (err) {
 
-                    console.log( err )
-                    // firebasedb.create('user', err.userObj, (err, userObj ) => {
-                    //     if (err) {
-                    //
-                    //         console.log( err )
-                    //         return;
-                    //     }
-                    //
-                    //     console.log( userObj );
-                    //     // this.connect()
-                    // });
-                    // if (err) {
-                    //     firebasedb.create('user', firebaseUser);
-                    //     this.connect();
-                    // }
+                    var userObj = err.userObj;
+                    firebasedb.create('user', userObj, (err, userObj ) => {
+                        if (err) {
+
+                            console.log('error');
+                            console.log( err )
+                            return;
+                        }
+
+                        console.log( userObj )
+                        // this.connect()
+                    });
                     return;
                 }
 
@@ -81,7 +101,7 @@ const app = new Vue({
 
                 var user_name = user_data.profile.user_name;
                 // fetching the user/s groups
-                firebasedb.fetch_groups({ user_name: user_name, uid: user_data.uid, groups: tool.ObjectValues( user_data.groups ) }, (groups) => {
+                firebasedb.fetch_groups({ user_name: user_name, uid: user_data.uid, groups: Object.values( user_data.groups ) }, (groups) => {
                     if ( Object.keys( groups ).length !== 0 ) {
 
                       app.groups = groups;
@@ -98,8 +118,10 @@ const app = new Vue({
         atch_send: function( type, src ) {
 
             this._query = '';
+            this.load.show = false;
             this.load.load_arr = [];
 
+            // setting all props with data
             this.msg.type = type;
             this.msg.message = src;
             this.msg.msg_id = tool.hash();
@@ -138,23 +160,23 @@ const app = new Vue({
 
 
                 this.msg.type = 'text';
-                this.msg.user_name = this.user_data.profile.user_name;
                 this.msg.msg_id = tool.hash();
+                this.msg.user_name = this.user_data.profile.user_name;
 
                 let group_mgs_len = this.groups[ this.session ].messages.length;
                 firebasedb.saveTo(`groups_db/${ this.session }/messages/${ group_mgs_len || 0 }`, this.msg, (err) => {
-                    if (err) {
+                    if (!err) {
 
                         console.log( err );
                         return;
                     }
 
-                    // this.groups[ this.session ].messages = this.groups[ this.session ].messages;
                     this.msg.message = '';
                 });
             }
         },
         atch_load: function( type ) {
+            this.load.show = true;
 
             // set the '_query' to a empty string
             this.atch_query = '';
@@ -232,11 +254,33 @@ const app = new Vue({
                                 resp = resp.resp;
                                 app.load.load_arr = resp.map(( i ) => {
 
-                                    return i.src
+                                    return i.src;
                                 })
                             })
                         break;
                 }
+            }
+        },
+        dispatch_action: function( action ) {
+
+              switch ( action ) {
+
+                    case 'settings':
+
+                          console.log( action )
+                          break;
+                    case 'account':
+
+                          console.log( action )
+                          break;
+                    case 'create group':
+
+                          console.log( action )
+                          break;
+                    case 'logout':
+
+                          console.log( action )
+                          break;
             }
         }
     },

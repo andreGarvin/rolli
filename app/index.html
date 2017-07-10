@@ -22,7 +22,8 @@
                     <div class="col-xs-4 col-sm-3 col-md-3 sidebar sidebar-container">
                         <div class="container-fuild">
                             <div class="row">
-                                <profilecontainer v-if='user_data !== undefined' :user_name='user_data.profile.user_name' :profile_pic='user_data.profile.profile_picture' />
+                                <profilecontainer @click='show = !( show )' v-if='user_data !== undefined' :user_name='user_data.profile.user_name' :profile_pic='user_data.profile.profile_picture' />
+                                <dropdown-menu class='menu pull-right' :condition='show_dropdown' :items='setting_items' :method='dispatch_action' />
                             </div>
 
                             <input type="text" class="form-control" v-model='query' placeholder='search for groups' />
@@ -62,20 +63,20 @@
                             </div>
 
                             <!-- ( Gif/meme/emoji ) container -->
-                            <div v-if='load.load_arr.length !== 0' class="bin col-xs-6 col-md-7 col-xs-offset-5 col-md-offset-4">
+                            <div v-if='load.show' class="bin col-xs-6 col-md-7 col-xs-offset-5 col-md-offset-4">
 
-                              <button @click='load.load_arr = []' type="button" class="close" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                              </button>
+                                  <button @click='load.show = false' type="button" class="close" aria-label="Close">
+                                      <span aria-hidden="true">&times;</span>
+                                  </button>
 
-                              <!--the input box -->
-                              <input v-if='load.load_type !== "emojis"' style='margin-bottom: 20px' type="text" class="form-control" v-model='atch_query' placeholder='search' />
+                                  <!--the input box -->
+                                  <input v-if='load.load_type !== "emojis"' style='margin-bottom: 20px' type="text" class="form-control" v-model='atch_query' placeholder='search' />
 
-                              <!-- displaying the attachments -->
-                              <div class="image-container">
-                                <img v-for='src in load.load_arr' @click='atch_send( load.load_type, src )' :src="src" class='src img-responsive img-rounded'/>
-                              </div>
-                            </div>
+                                  <!-- displaying the attachments -->
+                                  <div class="image-container">
+                                      <img v-for='src in load.load_arr' @click='atch_send( load.load_type, src )' :src="src" class='src img-responsive img-rounded'/>
+                                  </div>
+                             </div>
 
                             <!-- input box area -->
                             <div class="input-box">
