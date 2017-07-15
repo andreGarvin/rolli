@@ -155,12 +155,11 @@ const app = new Vue({
             }
         },
         send_msg: function() {
+	    
 	    // this function validates wether the input is a url
 	    function isUrl( input ) {
 
-		// input =  input.replace(/^\s+|s+$/g, '')
 		var pieces = input.split(' ')
-		console.log( pieces )
 		for ( let p in pieces ) {
 
 		     var has_proto = pieces[p].split(':')[0],
@@ -181,14 +180,32 @@ const app = new Vue({
 		return false;
 
 	    }
-
+	    
+	    function checkExtension( str, extn_arr ) {
+	    	
+		 // splits the string between every '/'
+		 var split_str = str.split('/');
+		 // gets the length of that array of split_str
+		 var split_str_len = split_str.length;
+		 
+		 // assigns 'str' to the last element of the 'split_str'
+		 str = split_str[split_str_len - 1];
+		
+		 // gets the last three characters of the str
+		 var str_extn = str.slice(str.length - 3, str.length);
+		 return extn_arr.includes(str_extn) ? true : false;
+	    }
 
 	    this.msg.message = this.msg.message.replace(/^\s+|\s+$/g, '');
             if ( this.msg.message.length !== 0 ) {
 
-		if ( isUrl( this.msg.message ) ) {
-
-		    this.msg.type = 'url';
+		
+		if ( isUrl( this.msg.message ) && checkExtension(this.msg.message, ['png', 'jpg']) ) {
+			this.msg.type = 'src';
+		}
+		else if ( isUrl( this.msg.message ) ) {
+			
+			this.msg.type = 'url';
 		}
 		else {
 
