@@ -23,7 +23,8 @@
                         <div class="container-fuild">
                             <div class="row">
                                 <profilecontainer @click='show = !( show )' v-if='user_data !== undefined' :user_name='user_data.profile.user_name' :profile_pic='user_data.profile.profile_picture' />
-                                <dropdown-menu class='menu pull-right' :condition='show_dropdown' :items='setting_items' :method='dispatch_action' />
+				<span type='button' class='glyphicon glyphicon-option-horizontal' aria-hidden='true'></span>
+				<dropdown-menu class='menu pull-right' :condition='show_dropdown' :items='setting_items' :method='dispatch_action' />
                             </div>
 
                             <input type="text" class="form-control" v-model='query' placeholder='search for groups' />
@@ -63,7 +64,7 @@
                             </div>
 
                             <!-- ( Gif/meme/emoji ) container -->
-                            <div v-if='load.show' class="bin col-xs-6 col-md-7 col-xs-offset-5 col-md-offset-4">
+                            <div v-if='load.show' class="bin col-xs-8 col-md-7 col-xs-offset-2 col-md-offset-4">
 
                                   <button @click='load.show = false' type="button" class="close" aria-label="Close">
                                       <span aria-hidden="true">&times;</span>

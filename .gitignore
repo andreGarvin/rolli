@@ -1,5 +1,5 @@
-/.arc
-/.bot
-/dist
-/node_modules
-/log.js
+.arc
+.bot
+dist
+node_modules
+log.js

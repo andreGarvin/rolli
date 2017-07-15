@@ -122,7 +122,7 @@ const app = new Vue({
             this.load.load_arr = [];
 
             // setting all props with data
-            this.msg.type = type;
+            this.msg.type = 'src';
             this.msg.message = src;
             this.msg.msg_id = tool.hash();
             this.msg.user_name = this.user_data.profile.user_name;
@@ -130,46 +130,77 @@ const app = new Vue({
 
 
             let group_msg_len = this.groups[ this.session ].messages.length;
-            firebasedb.saveTo(`groups_db/${ this.session }/messages/${ group_msg_len || 0 }`, this.msg);
+            firebasedb.saveTo(`groups_db/${ this.session }/messages/${ group_msg_len || 0 }`, this.msg, ( rsp ) => {
+	    	         if ( !rsp.status ) return console.log( rsp.msg );
 
-            this.msg.message = '';
+              	 this.msg.message = '';
+	          })
         },
         create_group: function() {
 
-            const group_name = prompt('group name'),
+            const group_name = prompt('group name').replace(/^\s+|s+$/g, ''),
             group_obj = {
                 group_name: group_name,
-                admin: this.user_data.user_name
+                admin: this.user_data.profile.user_name,
+		            uid: this.user_data.uid
             };
-            if ( groups_name.length !== 0 ) {
+      	    console.log( group_obj )
+            if ( group_name.length !== 0 ) {
 
                 firebasedb.create('group', group_obj, (err, new_group) => {
-                  if (err) return console.log(err);
-
-                  let groups = this.groups;
-                  groups.push( new_group );
-
-                  this.groups = groups;
+                    if (err) return console.log(err);
+                    
+                    console.log(`${ group_name } was created, add friends to join your group to make it more active.`)
                 })
             }
         },
         send_msg: function() {
+	    // this function validates wether the input is a url
+	    function isUrl( input ) {
 
-            this.msg.message = this.msg.message.replace(/^\s+|\s+$/g, '');
+		// input =  input.replace(/^\s+|s+$/g, '')
+		var pieces = input.split(' ')
+		console.log( pieces )
+		for ( let p in pieces ) {
+
+		     var has_proto = pieces[p].split(':')[0],
+		     has_paths = pieces[p].split('').includes('/');
+		     if ( has_proto === 'https' || has_proto === 'http' ) {
+
+			 if ( has_paths ) {
+
+		             return true;
+			 }
+		     }
+		     else if ( has_paths && pieces[p].split('.').length === 2 ) {
+
+			     return true;
+		     }
+		}
+
+		return false;
+
+	    }
+
+
+	    this.msg.message = this.msg.message.replace(/^\s+|\s+$/g, '');
             if ( this.msg.message.length !== 0 ) {
 
+		if ( isUrl( this.msg.message ) ) {
 
-                this.msg.type = 'text';
-                this.msg.msg_id = tool.hash();
-                this.msg.user_name = this.user_data.profile.user_name;
+		    this.msg.type = 'url';
+		}
+		else {
+
+		    this.msg.type = 'text';
+		}
+
+		this.msg.msg_id = tool.hash()
+		this.msg.user_name = this.user_data.profile.user_name;
 
                 let group_mgs_len = this.groups[ this.session ].messages.length;
                 firebasedb.saveTo(`groups_db/${ this.session }/messages/${ group_mgs_len || 0 }`, this.msg, (err) => {
-                    if (!err) {
-
-                        console.log( err );
-                        return;
-                    }
+                    if (err) return console.log( err );
 
                     this.msg.message = '';
                 });

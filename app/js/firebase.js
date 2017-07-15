@@ -25,7 +25,7 @@ function saveTo( db_path, input, callback ) {
     try {
 
         firebase.database().ref(db_path).set(input);
-        return callback(null, {
+        return callback({
             status: true,
             msg: `firebase: Data Was Stored To '${ db_path }'.`
         }) || true;
@@ -55,7 +55,7 @@ function create( type, obj, callback ) {
 
         case 'user':
 
-            firebase.database().ref('usersdb').on('value', ( users ) => {
+            firebase.database().ref('usersdb').once('value', ( users ) => {
 
                     users = users.val();
                     // gets all the users emails
@@ -117,7 +117,7 @@ function create( type, obj, callback ) {
         case 'group':
 
             // change to code to check if the group exist in the dbatabse first
-            firebase.database().ref('groups_db').on('value', (groups) => {
+            firebase.database().ref('groups_db').once('value', (groups) => {
 
                     groups = groups.val();
                     // checks if the group name does not exist
@@ -127,16 +127,16 @@ function create( type, obj, callback ) {
                         templateGroupObj = {
                             attachments: false,
                             db_obj: {
-                                admin: obj.user_name,
+				                        admin: obj.admin,
                                 init: current_time,
-                                key: obj.key,
-                                memebers: {}
+                                key: obj.key || 'global',
+                                members: {}
                             },
                             messages: false,
                             requests: false
                         };
 
-                        templateGroupObj.db_obj.memebers[ obj.user_name ] = obj.uid;
+                        templateGroupObj.db_obj.members[ obj.admin ] = obj.uid;
                         // saving the group data to the firebase database 'groups_db' collection
                         saveTo(`groups_db/${ obj.group_name }`, templateGroupObj, (err, data) => {
                             if (err) {
@@ -145,7 +145,7 @@ function create( type, obj, callback ) {
                             }
                             else {
 
-
+                                add_user_to_group(group_name, obj.admin, obj.uid)
                                 resp = callback(null, {
                                      status: true,
                                      msg: `New Group '${ obj.group_name }' Was Created.`
@@ -197,7 +197,7 @@ function search_db( obj, callback ) {
         for user, groups, or messages sent
     */
 
-    firebase.database().ref('groups_db').on('value', (grups) => {
+    firebase.database().ref('groups_db').on('value', (groups) => {
 
         //  the groups object
         groups = groups.val();
@@ -205,12 +205,12 @@ function search_db( obj, callback ) {
         // returns back the groups names that macth the query string
         var matchs = Object.keys(groups).filter( ( group_name ) => {
 
-            return groups_name.slice(0, obj.query) === obj.query;
+            return group_name.slice(0, obj.query.length).toLowerCase() === obj.query.toLowerCase();
         })
 
         // if 'match' is not empty then return back the array of matches
         if ( matchs.length !== 0 ) {
-
+	    
             return callback( null, matchs );
         }
         else {
@@ -268,18 +268,21 @@ function fetch_groups( obj, callback ) {
         // the object holding the users groups
         var user_groups = {};
         var memeber_in_groups = Object.keys( groups ).filter( (group_name) => {
-
+            console.log( group_name )
             // getting back the arry of users in the group
             var group_members = Object.keys( groups[group_name].db_obj.members );
 
             // returns back the groups if the user is a group memeber
             return (
               (
+            		  // checks weather the user is a memberin the group
                   group_members.includes( obj.user_name )
                   &&
+            		  // checks if the uid is also in the group
                   Object.values( groups[group_name].db_obj.members ).includes( obj.uid )
               )
               &&
+              // checks if the 'group_name' is in the users groups ('obj.groups')
               obj.groups.includes( group_name )
             );
         })
