@@ -20,14 +20,17 @@
 
                     <!-- sidebar -->
                     <div class="col-xs-4 col-sm-3 col-md-3 sidebar sidebar-container">
-                        <div class="container-fuild">
+                        <div v-if='user_data !== undefined' class="container-fuild">
                             <div class="row">
-                                <profilecontainer @click='show = !( show )' v-if='user_data !== undefined' :user_name='user_data.profile.user_name' :profile_pic='user_data.profile.profile_picture' />
-				<span type='button' class='glyphicon glyphicon-option-horizontal' aria-hidden='true'></span>
-				<dropdown-menu class='menu pull-right' :condition='show_dropdown' :items='setting_items' :method='dispatch_action' />
-                            </div>
+                                <template id="">
+                                    <profilecontainer @click='show = !( show )' v-if='user_data !== undefined' :username='user_data.profile.user_name' :profilepic='user_data.profile.profile_picture'></profilecontainer>
+                                </template>
 
-                            <input type="text" class="form-control" v-model='query' placeholder='search for groups' />
+                                <button @click='show_dropdown = !( show_dropdown )' type='button' class='btn btn-default pull-right'></button>
+                                <template>
+                                    <dropdownmenu class='menu col-xs-offset-4 col-sm-offset-4 col-md-offset-4' :condition='show_dropdown' :items='setting_items' :method='dispatch_action'></dropdownmenu>
+                                </template>
+                            </div>
 
                             <button @click='create_group' class="btn btn-success">create group</button>
                             <div v-for='group in Object.keys( groups )' class='col-md-12 col-xs-12'>
@@ -35,25 +38,33 @@
                             </div>
                         </div>
 
-                        <!-- <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div v-else='user_data === undefined' class="col-xs-12 col-sm-12 col-md-12">
                              <h1 style='color: #fff;' class='text-center'> Rolli </h1>
-                        </div> -->
+                        </div>
                     </div>
 
                     <!-- screen of the chat room -->
                     <div class="main-container col-xs-8 col-sm-9 col-md-9 pull-right">
-                        <div class="container-fuild">
+
+                        <span v-if='user_data === undefined'>
+                              <authcontainer></authcontainer>
+                        </span>
+
+                        <div v-else='user_data !=== undefined' class="container-fuild">
 
                             <!-- navbar area -->
                             <div class="navbar navbar-default navbar-static-top">
-                                <h2 id='group_title_name' class="text-center">{{ session }}</h2>
+                                <div class="col-xs-5 col-sm-5 col-md-5">
+                                    <input type="text" class="form-control" v-model='query' placeholder='search for groups' />
+                                </div>
+                                <h2 id='group_title_name' class="text-center col-xs-12 col-sm12 col-md-12">{{ session }}</h2>
                             </div>
 
                             <!-- sreen area -->
                             <div class="div screen col-xs-12 col-sm-12 col-md-12">
 
                                 <span v-if='Object.keys( groups ).length !== 0' v-for='msg in groups[session.toLowerCase()].messages' class='col-xs-12 col-sm-12 col-md-12'>
-                                    <message :msg='msg' :user_name='user_data.profile.user_name' />
+                                    <message :msg='msg' :user_name='user_data.profile.user_name'></message>
                                 </span>
 
                                 <span v-else='Obect.keys( groups ).length === 0' class='col-xs-12 col-sm-12 col-md-12'>
@@ -112,7 +123,7 @@
         <script src='https://unpkg.com/vue/dist/vue.js'></script>
 
         <!-- loadash cdn -->
-        <script type="text/javascript" src="https://unpkg.com/lodash@4.13.1/lodash.min.js"></script>
+        <!-- <script type="text/javascript" src="https://unpkg.com/lodash@4.13.1/lodash.min.js"></script> -->
 
         <!-- my jajavascript source code -->
         <script type="text/javascript" src="bundle.js"></script>
