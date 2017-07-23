@@ -1,5 +1,5 @@
 import * as firebase from 'firebase';
-import hash from './hash';
+import tool from './tools';
 
 firebase.initializeApp({
     apiKey: "AIzaSyC8kFt2_cHkLPF3YHrhB9yi_b37VJBcdfM",
@@ -66,7 +66,7 @@ function create( type, obj, callback ) {
 
 
                     // checking the user the user_name exist and the email
-                    if ( users_emails.includes( obj.email ) ) {
+                    if ( user_emails.includes( obj.email ) ) {
 
                         // return back the callback
                         resp = callback({
@@ -78,7 +78,7 @@ function create( type, obj, callback ) {
 
                            //  format the userObj with given user input from 'obj'
                            templateUserObj = {
-                                uid:  hash.hash(),
+                                uid: tool.hash(),
                                 email: obj.email,
                                 invitations: false,
                                 groups: {
@@ -86,22 +86,24 @@ function create( type, obj, callback ) {
                                 },
                                 profile: {
                                     joined: current_time,
-                                    profile_picture: 'http://i0.kym-cdn.com/photos/images/newsfeed/000/862/065/0e9.jpg',
+                                    profile_picture: false,
                                     full_name: obj.full_name,
                                     user_name: obj.user_name
                                 },
                             };
                             // saving the user to the firebase database 'userdb' collection
-                            saveTo(`usersdb/${ obj.user_name }`, templateUserObj, (report) => {
-                                  if (!report.status) {
+                            saveTo(`usersdb/${ obj.user_name }`, templateUserObj, (err, data) => {
+                                  if (err) {
 
-                                      resp = callback(report, undefined)
+                                      resp = callback(err, undefined)
                                   }
                                   else {
 
+                                      conole.log( data.msg )
                                       resp = callback(null, {
                                           status: true,
                                           msg: `User Rolli Account Created: Welcome '${ obj.user_name }' To Rolli.`,
+                                          obj: obj
                                       })
 
                                       add_user_to_group('global', obj.user_name, templateUserObj.uid)
@@ -171,7 +173,7 @@ function create( type, obj, callback ) {
 // adds new user to the group
 function add_user_to_group( group_name, user_name, uid ) {
 
-    saveTo(`groups_db/${ group_name }/db_obj/members/${ user_name }`, uid);
+    saveTo(`groups_db/${ group_name }/db_obj/memebers/${ user_name }`, uid);
     firebase.database().ref('groups_db').on('value', ( groups ) => {
 
         let group_memebers = Object.keys( groups.val()[ group_name ].db_obj.memebers );
@@ -223,29 +225,36 @@ function search_db( obj, callback ) {
 }
 
 // get the user information once the user is signed in
-function fetch_user( email, callback ) {
+function fetch_user( userObj, callback ) {
 
     const usersdb = firebase.database().ref('usersdb');
     usersdb.on('value', (users) => {
 
         // the users_db object
         users = users.val();
-
-        // array of all the users_data from the firebase database
+        /*
+            goes over all the users in the usersdb array
+            returns each users email.
+        */
+        // ObjectValues( users )
         let users_values = Object.values( users ),
-        user_data = users_values.filter( ( i ) => {
+        users_emails = users_values.map( ( i ) => {
 
-            /*
-            goes over all the users in the usersdb array returns
-            users data if 'uerObj.email' matches 'i.email'.
-            */
-            if ( i.email === email ) {
-
-                return i;
-            }
+            return i.email;
         });
 
-        return callback(null, user_data[0])
+        // checks to see if the user email exist in the ueser_emails array
+        if ( users_emails.includes( userObj.email ) ) {
+
+            return callback(null, users[ userObj.user_name ])
+        }
+
+        // return back a message and the userObj
+        return callback({
+            status: false,
+            userObj: userObj,
+            msh: `User '${ userObj.user_name }' does not exist.`
+        }, undefined)
     });
 }
 
@@ -259,7 +268,7 @@ function fetch_groups( obj, callback ) {
         // the object holding the users groups
         var user_groups = {};
         var memeber_in_groups = Object.keys( groups ).filter( (group_name) => {
-
+            console.log( group_name )
             // getting back the arry of users in the group
             var group_members = Object.keys( groups[group_name].db_obj.members );
 
@@ -290,6 +299,13 @@ function fetch_groups( obj, callback ) {
 
 
 export default {
+    // var auth = {
+    //     sig_in: function() {},
+    //     sign_up: function () {},
+    //     log_out: function() {
+    //
+    //     }
+    // }
     add_user_to_group: add_user_to_group,
     fetch_groups: fetch_groups,
     fetch_user: fetch_user,

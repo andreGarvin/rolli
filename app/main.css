@@ -2,6 +2,22 @@ html, body {
     height: 100%
 }
 
+
+.auth-container {
+    margin-top: 20px;
+    padding: 20px;
+}
+
+.auth-container input {
+    margin: 5px 0px 15px 0px;
+}
+
+#switch-btn {
+    text-decoration: underline;
+    cursor:pointer;
+    color: #337ab7;
+}
+
 /* sidebar container area */
 .sidebar-container {
     border-right: 1px solid #c7c1c1;
@@ -171,7 +187,6 @@ html, body {
 ul {
     list-style-type: none;
 }
-
 
 /*
 .src {
