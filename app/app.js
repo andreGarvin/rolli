@@ -149,7 +149,7 @@ const app = new Vue({
 
                 firebasedb.create('group', group_obj, (err, new_group) => {
                     if (err) return console.log(err);
-                    
+
                     console.log(`${ group_name } was created, add friends to join your group to make it more active.`)
                 })
             }
